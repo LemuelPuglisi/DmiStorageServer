@@ -53,7 +53,7 @@ class FoldersController extends Controller
         $jsonResponse = ['message' => null];
 
         $validation = Validator::make($request->all(), [
-            'display_name' => 'required|string|alpha_num|max:255|unique:folders,display_name',
+            'display_name' => 'required|string|regex:/^[a-zA-Z0-9\s]+$/|max:255|unique:folders,display_name',
             'subfolder_of' => 'numeric|nullable|exists:folders,id',
             'course_id' => 'required|numeric|exists:courses,id'
         ]);
@@ -125,7 +125,54 @@ class FoldersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $jsonResponse = ['message' => null]; 
+
+        $folder = Folder::find($id); 
+        if ($folder === null) {
+            $jsonResponse['message'] = 'Folder not found'; 
+            return response()->json($jsonResponse, 404); 
+        }
+
+        $validation = Validator::make($request->all(), [
+            'display_name' => 'required_without_all:subfolder_of,course_id|string|regex:/^[a-zA-Z0-9\s]+$/|max:255|unique:folders,display_name',
+            'subfolder_of' => 'required_without_all:display_name,course_id|numeric|nullable|exists:folders,id',
+            'course_id' => 'required_without_all:display_name,subfolder_of|numeric|exists:courses,id'
+        ]); 
+
+        if ($validation->fails()) {
+            $jsonResponse['message'] = $validation->errors();
+            return response()->json($jsonResponse, 400); 
+        }
+
+        $response = true; 
+        $validStorageName = $request->input('display_name') ?? $folder->storage_name; 
+        $validStorageName = str_replace(' ', '_', $validStorageName);
+        if (!Storage::disk('local')->exists($validStorageName)) {
+            $response = Storage::disk('local')->move($folder->storage_name, $validStorageName); 
+        }
+
+        if (!$response) {
+            $jsonResponse['message'] = 'Server Error, contact the sysAdmin';
+            return response()->json($jsonResponse, 500);
+        }
+
+        // have to debug the following code, it doesn't update anything
+
+        // a dir cannot be updated as a subfolder of itself
+
+        // cannot set a root folder by request
+
+        $response = $folder->update($request->all());
+        $folder->storage_name = $validStorageName; 
+        $response |= $folder->save(); 
+
+        if (!$response) {
+            $jsonResponse['message'] = 'Database Error, contact the SysAdmin';
+            return response()->json($jsonResponse, 500);
+        }
+
+        $jsonResponse['message'] = 'Folder updated successfully';
+        return response()->json($jsonResponse, 200);
     }
 
 
