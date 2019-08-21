@@ -15,12 +15,22 @@ class Folder extends Model
     ];
 
 
-
     public function course()
     {
         return $this->belongsTo(Course::class);
     }
 
+
+    public function parent()
+    {
+        return $this->belongsTo(Folder::class, 'subfolder_of');
+    }
+
+    
+    public function subfolders()
+    {
+        return $this->hasMany(Folder::class, 'subfolder_of');
+    }
 
 
     public function increaseInfluence()

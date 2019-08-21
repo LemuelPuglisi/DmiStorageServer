@@ -15,7 +15,6 @@ class Course extends Model
     ];
 
 
-
     public function folders()
     {
         return $this->hasMany(Folder::class);

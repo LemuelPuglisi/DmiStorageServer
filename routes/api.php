@@ -27,3 +27,5 @@ use Illuminate\Http\Request;
     */
     Route::resource('folders', 'FoldersController', ["except" => ['edit', 'create']]); 
     Route::get('folders/{id}/course', 'FoldersController@course')->name('folders.course');
+    Route::get('folders/{id}/parent', 'FoldersController@parent')->name('folders.parent'); 
+    Route::get('folders/{id}/subfolders', 'FoldersController@subfolders')->name('folders.subfolders'); 

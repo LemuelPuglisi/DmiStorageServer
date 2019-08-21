@@ -22,7 +22,11 @@ class FoldersController extends Controller
     }
 
     
-
+    /**
+     * Return the course of the folder.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function course($id)
     {
         $jsonResponse = [
@@ -37,6 +41,53 @@ class FoldersController extends Controller
         }
 
         $jsonResponse['content'] = $folder->course;
+        return response()->json($jsonResponse, 200);
+    }
+    
+    
+    
+    /**
+     * Return the parent folder of the folder.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function parent($id)
+    {
+        $jsonResponse = [
+            'content' => null,
+            'error' => null
+        ];
+
+        $folder = Folder::find($id);
+        if ($folder === null) {
+            $jsonResponse['error'] = 'Folder not found';
+            return response()->json($jsonResponse, 404);
+        }
+
+        $jsonResponse['content'] = $folder->parent;
+        return response()->json($jsonResponse, 200);
+    }
+
+
+    /**
+     * Return the subfolders of the folder.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function subfolders($id)
+    {
+        $jsonResponse = [
+            'content' => null,
+            'error' => null
+        ];
+
+        $folder = Folder::find($id);
+        if ($folder === null) {
+            $jsonResponse['error'] = 'Folder not found';
+            return response()->json($jsonResponse, 404);
+        }
+
+        $jsonResponse['content'] = $folder->subfolders;
         return response()->json($jsonResponse, 200);
     }
 
@@ -118,6 +169,8 @@ class FoldersController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * If subfolder_of param is -1, then the folder will be
+     * updated to a root folder of the course.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -125,46 +178,59 @@ class FoldersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $jsonResponse = ['message' => null]; 
+        $jsonResponse = ['message' => null];
 
-        $folder = Folder::find($id); 
+        $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['message'] = 'Folder not found'; 
-            return response()->json($jsonResponse, 404); 
+            $jsonResponse['message'] = 'Folder not found';
+            return response()->json($jsonResponse, 404);
         }
 
         $validation = Validator::make($request->all(), [
-            'display_name' => 'required_without_all:subfolder_of,course_id|string|regex:/^[a-zA-Z0-9\s]+$/|max:255|unique:folders,display_name',
-            'subfolder_of' => 'required_without_all:display_name,course_id|numeric|nullable|exists:folders,id',
+            'display_name' => 'required_without_all:subfolder_of,course_id|string|regex:/^[a-zàèéìòùA-Z0-9\s]+$/|max:255|unique:folders,display_name',
+            'subfolder_of' => 'required_without_all:display_name,course_id|numeric|nullable',
             'course_id' => 'required_without_all:display_name,subfolder_of|numeric|exists:courses,id'
-        ]); 
+        ]);
 
         if ($validation->fails()) {
             $jsonResponse['message'] = $validation->errors();
-            return response()->json($jsonResponse, 400); 
+            return response()->json($jsonResponse, 400);
         }
 
-        $response = true; 
-        $validStorageName = $request->input('display_name') ?? $folder->storage_name; 
-        $validStorageName = str_replace(' ', '_', $validStorageName);
-        if (!Storage::disk('local')->exists($validStorageName)) {
-            $response = Storage::disk('local')->move($folder->storage_name, $validStorageName); 
+        if ($request->input('subfolder_of')) {
+            $id = $request->input('subfolder_of');
+            if ($id == -1) {
+                $folder->subfolder_of = null;
+            } elseif ($folder->id == $id || !Folder::find($id)) {
+                $jsonResponse['message'] = 'This folder cannot be a subfolder of itself or of folders that doesn\'t exists';
+                return response()->json($jsonResponse, 400);
+            } else {
+                $folder->subfolder_of = $id;
+            }
         }
 
-        if (!$response) {
-            $jsonResponse['message'] = 'Server Error, contact the sysAdmin';
-            return response()->json($jsonResponse, 500);
+        if ($request->input('display_name')) {
+            $folder->display_name = $request->input('display_name');
+            $validStorageName = str_replace(' ', '_', $request->input('display_name'));
+            if (!Storage::disk('local')->exists($validStorageName)) {
+                $response = Storage::disk('local')->move($folder->storage_name, $validStorageName);
+                if (!$response) {
+                    $jsonResponse['message'] = 'Server Error, contact the sysAdmin';
+                    return response()->json($jsonResponse, 500);
+                } else {
+                    $folder->storage_name = $validStorageName;
+                }
+            } else {
+                $jsonResponse['message'] = 'This folder name conflicts with server storage folders.';
+                return response()->json($jsonResponse, 500);
+            }
         }
 
-        // have to debug the following code, it doesn't update anything
+        if ($request->input('course_id')) {
+            $folder->course_id = $request->input('course_id');
+        }
 
-        // a dir cannot be updated as a subfolder of itself
-
-        // cannot set a root folder by request
-
-        $response = $folder->update($request->all());
-        $folder->storage_name = $validStorageName; 
-        $response |= $folder->save(); 
+        $response = $folder->save();
 
         if (!$response) {
             $jsonResponse['message'] = 'Database Error, contact the SysAdmin';
@@ -185,6 +251,29 @@ class FoldersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $jsonResponse = ['message' => null];
+
+        $folder = Folder::find($id);
+        if ($folder === null) {
+            $jsonResponse['message'] = 'Folder not found';
+            return response()->json($jsonResponse, 404);
+        }
+
+        if (Storage::disk('local')->exists($folder->storage_name)) {
+            $response = Storage::disk('local')->deleteDirectory($folder->storage_name);
+            if (!$response) {
+                $jsonResponse['message'] = 'Server error, contact the sysAdmin';
+                return response()->json($jsonResponse, 500);
+            }
+        }
+
+        $response = $folder->delete();
+        if (!$response) {
+            $jsonResponse['message'] = 'Database error, contact the sysAdmin';
+            return response()->json($jsonResponse, 500);
+        }
+
+        $jsonResponse['message'] = 'The folder has been successfully removed';
+        return response()->json($jsonResponse, 200);
     }
 }
