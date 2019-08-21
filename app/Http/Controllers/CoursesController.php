@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Models\Folder;
 use Illuminate\Support\Facades\Validator;
 
 class CoursesController extends Controller
 {
+
+
     /**
      * Display a listing of the resource.
      *
@@ -19,14 +22,88 @@ class CoursesController extends Controller
     }
 
 
+    /**
+     * Display an ordered listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function orderedIndex($param, $order)
     {
         if (!in_array($param, Course::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
             return response()->json([
+                'content' => null,
                 'error' => 'Params must be year, id or cfu and order must be desc or asc'
             ], 400);
         }
-        return response()->json(Course::orderBy($param, $order)->get(), 200);
+        return response()->json([
+            'content' => Course::orderBy($param, $order)->get(),
+            'error' => null
+        ], 200);
+    }
+
+
+
+    /**
+     * Display the folders contained in the course.
+     * If root parameter is true, then it will display only root folders
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function folders($id, Request $request)
+    {
+        $jsonResponse = [
+            'content' => null,
+            'error' => null
+        ];
+
+        $course = Course::find($id);
+        if ($course === null) {
+            $jsonResponse['error'] = 'Course not found';
+            return response()->json($jsonResponse, 404);
+        }
+
+        if ($request->input('root')) {
+            $jsonResponse['content'] = $course->rootFolders;
+            return response()->json($jsonResponse, 200);
+        }
+
+        $jsonResponse['content'] = $course->folders;
+        return response()->json($jsonResponse, 200);
+    }
+
+
+    /**
+     * Display an ordered list of the folders contained
+     * in a Course, if you pass root=true then it will
+     * display only the root ones.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function orderedFolders($id, $param, $order, Request $request)
+    {
+        $jsonResponse = [
+            'content' => null,
+            'error' => null
+        ];
+
+        $course = Course::find($id);
+        if ($course === null) {
+            $jsonResponse['error'] = 'Course not found';
+            return response()->json($jsonResponse, 404);
+        }
+
+        if (!in_array($param, Folder::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
+            $jsonResponse['error'] = 'Params must be id or influence and order must be desc or asc';
+            return response()->json($jsonResponse, 400);
+        }
+
+        $folders = $course->orderedFolders($param, $order);
+        if ($request->input('root')) {
+            $folders = $folders->where('subfolder_of', null);
+        }
+
+        $jsonResponse['content'] = $folders;
+        return response()->json($jsonResponse, 200);
     }
 
 
