@@ -26,8 +26,4 @@ use Illuminate\Http\Request;
     *   Folder Routing  
     */
     Route::resource('folders', 'FoldersController', ["except" => ['edit', 'create']]); 
-
-
-    // Route::middleware('auth:api')->get('/user', function (Request $request) {
-    //     return $request->user();
-    // });
+    Route::get('folders/{id}/course', 'FoldersController@course')->name('folders.course');

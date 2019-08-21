@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Folder extends Model
 {
     protected $fillable = [
-        'display_name'
+        'display_name, subfolder_of, course_id'
     ];
 
     public static $sortableFields = [
@@ -19,5 +19,13 @@ class Folder extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+
+
+    public function increaseInfluence()
+    {
+        $this->influence ++;
+        $this->save();
     }
 }
