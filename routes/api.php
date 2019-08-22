@@ -32,6 +32,7 @@ use Illuminate\Http\Request;
     Route::get('folders/{id}/files', 'FoldersController@files')->name('folders.files');  
     Route::get('folders/{id}/subfolders', 'FoldersController@subfolders')->name('folders.subfolders'); 
     Route::get('folders/{id}/files/sort/{param}/{order}', 'FoldersController@orderedFiles')->name('folders.files.sort'); 
+    Route::get('folders/{id}/files/{ext}/ext', 'FoldersController@getFileByExt')->name('folders.files.extension');
 
     /*
     *   Files Routing  

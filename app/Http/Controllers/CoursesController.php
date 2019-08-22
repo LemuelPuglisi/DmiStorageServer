@@ -32,7 +32,7 @@ class CoursesController extends Controller
         if (!in_array($param, Course::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
             return response()->json([
                 'content' => null,
-                'error' => 'Params must be year, id or cfu and order must be desc or asc'
+                'error' => 'Params must be year, id, cfu or timestamps and order must be desc or asc'
             ], 400);
         }
         return response()->json([
@@ -93,7 +93,7 @@ class CoursesController extends Controller
         }
 
         if (!in_array($param, Folder::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
-            $jsonResponse['error'] = 'Params must be id or influence and order must be desc or asc';
+            $jsonResponse['error'] = 'Params must be id, influence or timestamps and order must be desc or asc';
             return response()->json($jsonResponse, 400);
         }
 
@@ -107,32 +107,32 @@ class CoursesController extends Controller
     }
 
 
-    /** 
+    /**
      * Return a choosen number of most viewed files
-     * from a course. 
-     * 
+     * from a course.
+     *
      * @return \Illuminate\Http\Response
     */
     public function getMostViewedFiles($id, $limit)
     {
         $jsonResponse = [
-            'content' => null, 
-            'error' => null 
-        ]; 
+            'content' => null,
+            'error' => null
+        ];
 
-        $course = Course::find($id); 
+        $course = Course::find($id);
         if ($course === null) {
-            $jsonResponse['error'] = 'Course not found'; 
-            return response()->json($jsonResponse, 404); 
+            $jsonResponse['error'] = 'Course not found';
+            return response()->json($jsonResponse, 404);
         }
 
-        if(!ctype_digit($limit)) {
-            $jsonResponse['error'] = 'Limit must be an integer'; 
-            return response()->json($jsonResponse, 400); 
+        if (!ctype_digit($limit)) {
+            $jsonResponse['error'] = 'Limit must be an integer';
+            return response()->json($jsonResponse, 400);
         }
 
-        $jsonResponse['content'] = $course->mostViewedFiles($limit); 
-        return response()->json($jsonResponse, 200); 
+        $jsonResponse['content'] = $course->mostViewedFiles($limit);
+        return response()->json($jsonResponse, 200);
     }
 
 

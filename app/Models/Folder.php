@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Folder extends Model
 {
     protected $fillable = [
-        'display_name', 'subfolder_of', 'course_id', 
+        'display_name', 'subfolder_of', 'course_id',
     ];
 
     public static $sortableFields = [
@@ -24,6 +24,12 @@ class Folder extends Model
     public function files()
     {
         return $this->hasMany(File::class);
+    }
+
+
+    public function orderedFiles($param, $order)
+    {
+        return $this->files()->orderBy($param, $order)->get();
     }
 
 

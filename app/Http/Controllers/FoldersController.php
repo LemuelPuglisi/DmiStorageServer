@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Folder;
+use App\Models\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
@@ -45,7 +46,11 @@ class FoldersController extends Controller
     }
     
     
-    
+    /**
+     * Return the files of the folder
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function files($id)
     {
         $jsonResponse = [
@@ -60,6 +65,60 @@ class FoldersController extends Controller
         }
 
         $jsonResponse['content'] = $folder->files;
+        return response()->json($jsonResponse, 200);
+    }
+
+
+    /**
+     * Return the sorted files of the folder
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function orderedFiles($id, $param, $order)
+    {
+        $jsonResponse = [
+            'content' => null,
+            'error' => null
+        ];
+
+        $folder = Folder::find($id);
+        if ($folder === null) {
+            $jsonResponse['error'] = 'Folder not found';
+            return response()->json($jsonResponse, 404);
+        }
+
+        if (!in_array($param, File::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
+            $jsonResponse['error'] = 'Params must be id, influence or timestamps and order must be desc or asc';
+            return response()->json($jsonResponse, 400);
+        }
+
+        $jsonResponse['content'] = $folder->orderedFiles($param, $order);
+        return response()->json($jsonResponse, 200);
+    }
+
+    
+
+    /**
+     * Return the files of the folder
+     * whit a specific extension
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getFileByExt($id, $ext)
+    {
+        $jsonResponse = [
+            'content' => null,
+            'error' => null
+        ];
+
+        $folder = Folder::find($id);
+        if ($folder === null) {
+            $jsonResponse['error'] = 'Folder not found';
+            return response()->json($jsonResponse, 404);
+        }
+
+        $files = $folder->files->where('extension', $ext);
+        $jsonResponse['content'] = $files;
         return response()->json($jsonResponse, 200);
     }
 

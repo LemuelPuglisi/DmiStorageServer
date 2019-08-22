@@ -7,9 +7,11 @@ use App\Models\File;
 use App\Models\Folder;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 class FilesController extends Controller
 {
+
 
     /**
      * Display a listing of the resource.

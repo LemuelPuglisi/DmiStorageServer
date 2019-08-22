@@ -7,7 +7,7 @@ Departement of Mathematics and Informatics cloud based storage server.
 ### Project Tree
 
 - [**Requirements**](#Requirements)
-
+- [**Installation**](#Installation)
 - [**Contributing**](#Contributing)
 - [**Structure**](#Structure)
 - [**API Documentation**](#Documentation)
@@ -18,6 +18,48 @@ Departement of Mathematics and Informatics cloud based storage server.
 ### Requirements
 
 This is a Laravel project, so you can find the requirements on [Laravel Official Documentation - server requirements](https://laravel.com/docs/5.8#server-requirements) 
+
+*****
+
+### Installation 
+
+Clone or download this repository: 
+
+```sh
+$ git clone https://github.com/LemuelPuglisi/DmiStorageServer.git
+```
+
+Run composer update:
+
+```sh
+$ composer update
+```
+
+Generate the key:
+
+```sh
+$ php artisan key:generate
+```
+
+Create a mySQL database: 
+
+```mysql
+CREATE DATABASE dmi_storage_db
+```
+
+Run the migrations: 
+
+```sh
+$ php artisan migrate
+```
+
+Start a Laravel development server: 
+
+```sh
+$ php artisan serve
+```
+
+Now you're ready to use our cloud! 
 
 *****
 
@@ -203,7 +245,7 @@ With errors
 >
 > **Params:** none
 >
-> **Notes**: {Param} must be choosed from {id, year, cfu}, {order} could be 'asc' for ascendent or 'desc' for descendent. 
+> **Notes**: {Param} must be choosed from {id, year, cfu, created_at, updated_at}, {order} could be 'asc' for ascendent or 'desc' for descendent. 
 >
 > **Response example:** Ordering by Id, descendent
 
@@ -283,7 +325,7 @@ With errors
 >
 > **Params:** root
 >
-> **Notes**: {Param} must be choosed from {id, influence}, {order} could be 'asc' for ascendent or 'desc' for descendent. If root = true, then it will display only root folders.
+> **Notes**: {Param} must be choosed from {id, influence, created_at, updated_at}, {order} could be 'asc' for ascendent or 'desc' for descendent. If root = true, then it will display only root folders.
 >
 > **Response example:** Ordering by Id, descendent, root only folders
 
@@ -309,6 +351,52 @@ With errors
             "course_id": 1,
             "created_at": "2019-08-21 20:22:51",
             "updated_at": "2019-08-21 21:21:10"
+        }
+    ],
+    "error": null
+}
+```
+
+
+
+> **Name:** courses.trend 
+>
+> **Request:** localhost:8000/api/courses/{id}/trend/{limit}
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Notes**: It will return the top {limit} files (by influence) from a course 
+>
+> **Response example:**
+
+```json
+{
+    "content": [
+        {
+            "id": 3,
+            "uid": "Limiti5d5e93bb90106",
+            "name": "Limiti",
+            "author": "Marco Rossi",
+            "extension": "png",
+            "influence": 1,
+            "user_id": 1,
+            "folder_id": 1,
+            "created_at": "2019-08-22 13:08:11",
+            "updated_at": "2019-08-22 18:54:01"
+        },
+        {
+            "id": 5,
+            "uid": "Teoremi5d5e9f943d2a1",
+            "name": "Teoremi",
+            "author": "Giuseppe Verdi",
+            "extension": "jpg",
+            "influence": 0,
+            "user_id": 1,
+            "folder_id": 1,
+            "created_at": "2019-08-22 13:58:44",
+            "updated_at": "2019-08-22 14:04:41"
         }
     ],
     "error": null
@@ -517,6 +605,327 @@ with errors
     "error": null
 }
 ```
+
+
+
+> **Name:** folders.files
+>
+> **Request:** localhost:8000/api/folders/{id}/files
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Response example:** 
+
+```json
+{
+    "content": [
+        {
+            "id": 3,
+            "uid": "Limiti5d5e93bb90106",
+            "name": "Limiti",
+            "author": "Marco Rossi",
+            "extension": "png",
+            "influence": 1,
+            "user_id": 1,
+            "folder_id": 1,
+            "created_at": "2019-08-22 13:08:11",
+            "updated_at": "2019-08-22 18:54:01"
+        },
+        {
+            "id": 5,
+            "uid": "Teoremi5d5e9f943d2a1",
+            "name": "Teoremi",
+            "author": "Giuseppe Verdi",
+            "extension": "jpg",
+            "influence": 0,
+            "user_id": 1,
+            "folder_id": 1,
+            "created_at": "2019-08-22 13:58:44",
+            "updated_at": "2019-08-22 14:04:41"
+        }
+    ],
+    "error": null
+}
+```
+
+
+
+
+
+> **Name:** folders.files.extension
+>
+> **Request:** localhost:8000/api/folders/{id}/files/{ext}/ext
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Note:** This will return all the files with {ext} extension from the selected folder
+>
+> **Response example:** {png}
+
+```json
+{
+    "content": [
+        {
+            "id": 3,
+            "uid": "Limiti5d5e93bb90106",
+            "name": "Limiti",
+            "author": "Di Fazio",
+            "extension": "png",
+            "influence": 1,
+            "user_id": 1,
+            "folder_id": 1,
+            "created_at": "2019-08-22 13:08:11",
+            "updated_at": "2019-08-22 18:54:01"
+        }
+    ],
+    "error": null
+}
+```
+
+
+
+> **Name:** folders.files.sort
+>
+> **Request:** localhost:8000/api/folders/{id}/files/sort/{param}/{order}
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Note:** This will return all the files ordered by a {param} in an {order}
+>
+> **Response example:** {order by influence, descendant}
+
+```json
+{
+    "content": [
+        {
+            "id": 3,
+            "uid": "Limiti5d5e93bb90106",
+            "name": "Limiti",
+            "author": "Marco Rossi",
+            "extension": "png",
+            "influence": 1,
+            "user_id": 1,
+            "folder_id": 1,
+            "created_at": "2019-08-22 13:08:11",
+            "updated_at": "2019-08-22 18:54:01"
+        },
+        {
+            "id": 5,
+            "uid": "Teoremi5d5e9f943d2a1",
+            "name": "Teoremi",
+            "author": "Giuseppe Verdi",
+            "extension": "jpg",
+            "influence": 0,
+            "user_id": 1,
+            "folder_id": 1,
+            "created_at": "2019-08-22 13:58:44",
+            "updated_at": "2019-08-22 14:04:41"
+        }
+    ],
+    "error": null
+}
+```
+
+
+
+#### Files APIs
+
+
+
+> **Name:** files.store 
+>
+> **Request:** localhost:8000/api/files
+>
+> **Method:** POST
+>
+> **Params:** name, author, folder_id, file (the file you want to store)
+>
+> **Response example:** 
+
+```json
+{
+    "message": "File successfully uploaded"
+}
+```
+
+ 
+
+> **Name:** files.index
+>
+> **Request:** localhost:8000/api/files
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Response example:** 
+
+```json
+[
+    {
+        "id": 6,
+        "uid": "integrali5d5f0b126f854",
+        "name": "integrali",
+        "author": "Marco Rossi",
+        "extension": "jpeg",
+        "influence": 0,
+        "user_id": 1,
+        "folder_id": 1,
+        "created_at": "2019-08-22 21:37:22",
+        "updated_at": "2019-08-22 21:37:22"
+    }
+]
+```
+
+> **Name:** files.show
+>
+> **Request:** localhost:8000/api/files/{id}
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Response example:** 
+
+```json
+{
+    "id": 6,
+    "uid": "integrali5d5f0b126f854",
+    "name": "integrali",
+    "author": "Marco Rossi",
+    "extension": "jpeg",
+    "influence": 0,
+    "user_id": 1,
+    "folder_id": 1,
+    "created_at": "2019-08-22 21:37:22",
+    "updated_at": "2019-08-22 21:37:22"
+}
+```
+
+
+
+> **Name:** files.update
+>
+> **Request:** localhost:8000/api/files/{id} 
+>
+> **Method:** PUT|PATCH 
+>
+> **Params:** name, author, folder_id (Not all required, but at least 1)
+>
+> **Response example:** 
+
+```json
+{
+    "message": "File successfully updated"
+}
+```
+
+
+
+> **Name:** files.destroy
+>
+> **Request:** localhost:8000/api/files/{id}
+>
+> **Method:** DELETE 
+>
+> **Params:** none
+>
+> **Response example:** 
+
+```json
+{
+    "message": "File successfully deleted"
+}
+```
+
+
+
+> **Name:** files.extension
+>
+> **Request:** localhost:8000/api/files/{ext}/ext 
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Note:** This will return all the files with {ext} extension
+>
+> **Response example:** {png}
+
+```json
+[
+    {
+        "id": 3,
+        "uid": "Limiti5d5e93bb90106",
+        "name": "Limiti",
+        "author": "Marco Rossi",
+        "extension": "png",
+        "influence": 1,
+        "user_id": 1,
+        "folder_id": 1,
+        "created_at": "2019-08-22 13:08:11",
+        "updated_at": "2019-08-22 18:54:01"
+    }
+]
+```
+
+ 
+
+> **Name:** files.folder
+>
+> **Request:** localhost:8000/api/files/{id}/folder 
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Response example:**
+
+```json
+{
+    "content": {
+        "id": 1,
+        "display_name": "Derivate",
+        "storage_name": "Derivate",
+        "influence": 0,
+        "subfolder_of": null,
+        "course_id": 2,
+        "created_at": "2019-08-22 12:05:10",
+        "updated_at": "2019-08-22 12:05:10"
+    },
+    "error": null
+}
+```
+
+ 
+
+> **Name:** files.download
+>
+> **Request:** localhost:8000/api/files/{id}/download
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Response:** Forces the user's browser to download the file.
+
+
+
+> **Name:** files.stream
+>
+> **Request:** localhost:8000/api/files/{id}/stream
+>
+> **Method:** GET
+>
+> **Params:** none
+>
+> **Response:**  Display a file directly in the user's browser instead of initiating a download.
 
 
 
