@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
     Route::get('courses/sort/{param}/{order}', 'CoursesController@orderedIndex')->name('courses.sort'); 
     Route::get('courses/{id}/folders', 'CoursesController@folders')->name('courses.folders'); 
     Route::get('courses/{id}/folders/sort/{param}/{order}', 'CoursesController@orderedFolders')->name('courses.folders.sort'); 
+    Route::get('courses/{id}/trend/{limit}', 'CoursesController@getMostViewedFiles')->name('courses.trend'); 
 
     /*
     *   Folders Routing  

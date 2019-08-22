@@ -11,7 +11,7 @@ class File extends Model
     ];
 
     public static $sortableFields = [
-        'id', 'influence', 'name'
+        'id', 'influence', 'name', 'created_at', 'updated_at'
     ];
 
     public function increaseInfluence()

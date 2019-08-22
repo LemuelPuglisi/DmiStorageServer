@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Course extends Model
 {
@@ -11,7 +12,7 @@ class Course extends Model
     ];
 
     public static $sortableFields = [
-        'id', 'year', 'cfu'
+        'id', 'year', 'cfu', 'created_at', 'updated_at'
     ];
 
 
@@ -35,10 +36,11 @@ class Course extends Model
 
     public function mostViewedFiles($limit)
     {
-        return DB::table('folders')
-                ->join('files', 'folders.id', '=', 'files.folder_id')
+        return DB::table('files')
+                ->select('files.*')
+                ->join('folders', 'folders.id', '=', 'files.folder_id')
                 ->where('folders.course_id', '=', $this->id)
-                ->orderBy('files_influence', 'desc')
+                ->orderBy('files.influence', 'desc')
                 ->limit($limit)
                 ->get();
     }

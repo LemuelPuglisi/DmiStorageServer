@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Folder extends Model
 {
     protected $fillable = [
-        'display_name, subfolder_of, course_id'
+        'display_name', 'subfolder_of', 'course_id', 
     ];
 
     public static $sortableFields = [
-        'id', 'influence'
+        'id', 'influence', 'created_at', 'updated_at'
     ];
 
 
