@@ -18,6 +18,7 @@ class CreateFilesTable extends Migration
             $table->string('uid')->unique();
             $table->string('name');
             $table->string('author');
+            $table->string('extension'); 
             $table->integer('influence');
             $table->unsignedbigInteger('user_id');
             $table->unsignedbigInteger('folder_id');
