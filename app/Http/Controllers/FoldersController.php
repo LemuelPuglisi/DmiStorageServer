@@ -46,6 +46,25 @@ class FoldersController extends Controller
     
     
     
+    public function files($id)
+    {
+        $jsonResponse = [
+            'content' => null,
+            'error' => null
+        ];
+
+        $folder = Folder::find($id);
+        if ($folder === null) {
+            $jsonResponse['error'] = 'Folder not found';
+            return response()->json($jsonResponse, 404);
+        }
+
+        $jsonResponse['content'] = $folder->files;
+        return response()->json($jsonResponse, 200);
+    }
+
+
+
     /**
      * Return the parent folder of the folder.
      *

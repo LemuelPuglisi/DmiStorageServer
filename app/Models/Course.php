@@ -31,4 +31,15 @@ class Course extends Model
     {
         return $this->folders()->orderBy($param, $order)->get();
     }
+
+
+    public function mostViewedFiles($limit)
+    {
+        return DB::table('folders')
+                ->join('files', 'folders.id', '=', 'files.folder_id')
+                ->where('folders.course_id', '=', $this->id)
+                ->orderBy('files_influence', 'desc')
+                ->limit($limit)
+                ->get();
+    }
 }
