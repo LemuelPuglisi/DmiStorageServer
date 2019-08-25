@@ -62,6 +62,25 @@ class FilesController extends Controller
 
 
 
+    public function user($id) 
+    {
+        $jsonResponse = [
+            'username' => null,
+            'error' => null
+        ];
+
+        $file = File::find($id);
+        if ($file === null) {
+            $jsonResponse['error'] = 'File not found';
+            return response()->json($jsonResponse, 404);
+        }
+
+        $jsonResponse['username'] = $file->user->name; 
+        return response()->json($jsonResponse, 200);
+    }
+
+
+
     /**
      * Store a newly created resource in storage.
      *
@@ -105,7 +124,7 @@ class FilesController extends Controller
         $file->author = $request->input('author') ?? 'anonymous';
         $file->extension = $ext;
         $file->influence = 0;
-        $file->user_id = 1; // build this with authentication
+        $file->user_id = $request->user()->id; 
         $file->folder_id = $request->input('folder_id');
         $response = $file->save();
 
