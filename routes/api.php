@@ -17,6 +17,15 @@ use Illuminate\Http\Request;
         return $request->user();
     });
 
+    /**
+     *  Authenticated routes
+     */
+    Route::middleware('auth:api')->group(function () {
+
+        // require passport token attached in the headers
+
+    });
+
     /*
     *   Courses Routing  
     */

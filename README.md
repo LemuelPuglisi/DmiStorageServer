@@ -10,6 +10,7 @@ Departement of Mathematics and Informatics cloud based storage server.
 - [**Installation**](#Installation)
 - [**Contributing**](#Contributing)
 - [**Structure**](#Structure)
+- [**Passport**](#Passport)
 - [**API Documentation**](#Documentation)
 - [**Infos**](#Infos)
 
@@ -47,10 +48,20 @@ Create a mySQL database:
 CREATE DATABASE dmi_storage_db
 ```
 
+Copy .env.example in .env and set your db credentials
+```sh
+$ cp .env.example .env
+```
+
 Run the migrations: 
 
 ```sh
 $ php artisan migrate
+```
+
+Run initialize the passport clients
+```sh
+$ php artisan passport:install
 ```
 
 Start a Laravel development server: 
@@ -59,7 +70,9 @@ Start a Laravel development server:
 $ php artisan serve
 ```
 
-Now you're ready to use our cloud! 
+Now you're ready to use our cloud!  
+
+*Note: the root htaccess will fix a passport bug in apache2 servers*
 
 *****
 
@@ -67,7 +80,7 @@ Now you're ready to use our cloud!
 
 Here's a list of rules that keep the work flow clean and the code maintainable.
 
-**Branching Strategy: ** [GitHub Flow](https://guides.github.com/introduction/flow/)
+**Branching Strategy:** [GitHub Flow](https://guides.github.com/introduction/flow/)
 
 **Semantic Versioning**: [SemVer](https://semver.org/)
 
@@ -106,6 +119,16 @@ The only sensible data stored in our database are the email and the password.
 The password will be hashed and salted. 
 
 The email will be encrypted. 
+
+*****
+
+### Passport 
+
+This server authentication ships with [Laravel Passport](https://laravel.com/docs/5.8/passport) , so please read the documentation.
+
+
+
+
 
 *****
 
