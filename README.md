@@ -124,11 +124,49 @@ The email will be encrypted.
 
 ### Passport 
 
-This server authentication ships with [Laravel Passport](https://laravel.com/docs/5.8/passport) , so please read the documentation.
+This server authentication ships with [Laravel Passport](https://laravel.com/docs/5.8/passport).
 
+We'll use Oauth2 password grant: 
 
+> *The OAuth2 password grant allows your other first-party clients, such as
+> a mobile application, to obtain an access token using an e-mail address
+> / username and password. This allows you to issue access tokens 
+> securely to your first-party clients without requiring your users to go 
+> through the entire OAuth2 authorization code redirect flow.*
 
+If you are not confident with OAuth2, i strongly recommend to see this [documentation](https://oauth.net/2/)
 
+#### Get the client id and client secret 
+
+The *passport:install* command needed in the [Installation](#Installation) should create 2 clients. 
+
+In order to send authenticated request we need to get the password client id and secret. 
+
+You can find them in the *Laravel Password Grant Client* record from the *oauth_clients* table.
+
+#### Get the user access token
+
+To get an user access token, make a **POST** request to **localhost:8000/oauth/token**, whit those parameters:
+
+```php
+'grant_type' => 'password',
+'client_id' => 'your_client_id',
+'client_secret' => 'your_client_secret',
+'username' => 'user_email_address',
+'password' => 'user_password',
+'scope' => ''
+```
+
+#### Make authenticated request
+
+After retrieving the user access token, in order to make authenticated requests you need to add this 2 headers:  
+
+```http
+Authorization: Bearer PASTE_THE_ACCESS_TOKEN
+accept: application/json
+```
+
+Add this 2 headers above all the requests that need an user authentication and it will work like charm. 
 
 *****
 
