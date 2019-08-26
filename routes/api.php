@@ -41,9 +41,9 @@ use Illuminate\Http\Request;
     });
 
     /**
-     * User Routing 
+     * User Routing (Throttle limit)
     */
-    Route::post('auth/signup', 'UsersController@register')->name('user.signup'); 
+    Route::post('auth/signup', 'UsersController@register')->name('user.signup')->middleware('throttle:5,10'); 
     Route::get('users/{id}/files', 'UsersController@uploadedFiles')->name('user.files'); 
 
     /*
