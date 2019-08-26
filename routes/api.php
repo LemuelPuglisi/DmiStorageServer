@@ -43,10 +43,16 @@ use Illuminate\Http\Request;
     /**
      * User Routing (Throttle limit)
     */
-    Route::post('auth/signup', 'UsersController@register')->name('user.signup')->middleware('throttle:5,10'); 
+    Route::middleware('throttle:5,10')->group(function () {
+
+        Route::post('auth/signup', 'UsersController@register')->name('user.signup');
+        Route::post('auth/forgot', 'ForgotPasswordController@sendResetLinkEmail')->name('user.forgot');
+        Route::post('auth/reset', 'ResetPasswordController@reset')->name('user.reset'); 
+
+    });
+
     Route::get('users/{id}/files', 'UsersController@uploadedFiles')->name('user.files'); 
-    Route::post('auth/forgot', 'ForgotPasswordController@sendResetLinkEmail')->name('user.forgot'); 
-    Route::post('auth/reset', 'ResetPasswordController@reset')->name('user.reset'); 
+
 
     /*
     *   Courses Routing  
