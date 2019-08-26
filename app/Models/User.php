@@ -5,6 +5,7 @@ namespace App\Models;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\PasswordResetNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\File; 
 
@@ -45,5 +46,13 @@ class User extends Authenticatable
     public function files()
     {
         return $this->hasMany(File::class);
+    }
+
+    /**
+     * Reset password customization 
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new PasswordResetNotification($token));
     }
 }
