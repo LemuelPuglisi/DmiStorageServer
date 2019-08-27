@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'dmiCloud'),
 
     /*
     |--------------------------------------------------------------------------
@@ -55,6 +55,19 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
 
     'asset_url' => env('ASSET_URL', null),
+
+    /*
+    |--------------------------------------------------------------------------
+    | callback URLs
+    |--------------------------------------------------------------------------
+    |
+    | Frontend callbacks urls are used to set the correct callback when 
+    | a client is making a request to a server api, for example the 
+    | reset callback is needed to send a correct reset link.
+    |
+    */
+
+    'reset_callback_url' => env('RESET_PASSWORD_CALLBACK', 'http://localhost/api/reset/?token='),
 
     /*
     |--------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -22,6 +22,8 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
+
+    const USER = 1; 
 
     /**
      * Where to redirect users after registration.
@@ -65,6 +67,7 @@ class RegisterController extends Controller
     {
         return User::create([
             'name' => $data['name'],
+            'role' => self::USER, 
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);

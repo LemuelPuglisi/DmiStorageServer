@@ -13,11 +13,51 @@ use Illuminate\Http\Request;
 |
 */
 
+    /**
+     *  Authenticated routes
+     */
+    Route::middleware('auth:api')->group(function () {
+
+        /**
+         *  Authenticated user routes
+         */
+        Route::get('user', 'UsersController@details')->name('user.details'); 
+
+        /**
+         *  Authenticated courses routes
+         */
+        Route::resource('courses', 'CoursesController')->only(['store', 'update', 'destroy']);
+
+        /**
+         *  Authenticated folders routes
+         */
+        Route::resource('folders', 'FoldersController')->only(['store', 'update', 'destroy']);
+
+        /**
+         *  Authenticated files routes
+         */
+        Route::resource('files', 'FilesController')->only(['store', 'update', 'destroy']);
+
+    });
+
+    /**
+     * User Routing (Throttle limit)
+    */
+    Route::middleware('throttle:5,10')->group(function () {
+
+        Route::post('auth/signup', 'UsersController@register')->name('user.signup');
+        Route::post('auth/forgot', 'ForgotPasswordController@sendResetLinkEmail')->name('user.forgot');
+        Route::post('auth/reset', 'ResetPasswordController@reset')->name('user.reset'); 
+
+    });
+
+    Route::get('users/{id}/files', 'UsersController@uploadedFiles')->name('user.files'); 
+
 
     /*
     *   Courses Routing  
     */
-    Route::resource('courses', 'CoursesController', ["except" => ['edit', 'create']]); 
+    Route::resource('courses', 'CoursesController')->only(['index', 'show']); 
     Route::get('courses/sort/{param}/{order}', 'CoursesController@orderedIndex')->name('courses.sort'); 
     Route::get('courses/{id}/folders', 'CoursesController@folders')->name('courses.folders'); 
     Route::get('courses/{id}/folders/sort/{param}/{order}', 'CoursesController@orderedFolders')->name('courses.folders.sort'); 
@@ -26,7 +66,7 @@ use Illuminate\Http\Request;
     /*
     *   Folders Routing  
     */
-    Route::resource('folders', 'FoldersController', ["except" => ['edit', 'create']]); 
+    Route::resource('folders', 'FoldersController')->only(['index', 'show']);  
     Route::get('folders/{id}/course', 'FoldersController@course')->name('folders.course');
     Route::get('folders/{id}/parent', 'FoldersController@parent')->name('folders.parent');
     Route::get('folders/{id}/files', 'FoldersController@files')->name('folders.files');  
@@ -37,8 +77,9 @@ use Illuminate\Http\Request;
     /*
     *   Files Routing  
     */
-    Route::resource('files', 'FilesController', ["except" => ['edit', 'create']]); 
+    Route::resource('files', 'FilesController')->only(['index', 'show']);
     Route::get('files/{ext}/ext', 'FilesController@getFilesByExt')->name('files.extension'); 
     Route::get('files/{id}/download', 'FilesController@downloadFile')->name('files.download');
     Route::get('files/{id}/stream', 'FilesController@streamFile')->name('files.stream'); 
     Route::get('files/{id}/folder', 'FilesController@folder')->name('files.folder'); 
+    Route::get('files/{id}/user', 'FilesController@user')->name('files.user'); 
