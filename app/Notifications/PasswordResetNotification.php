@@ -49,7 +49,7 @@ class PasswordResetNotification extends Notification
             ->line(Lang::getFromJson('Let\'s reset your password:'))
             ->action(Lang::getFromJson('Reset Password'), $urlToResetForm)
             ->line(Lang::getFromJson('This password reset link will expire in :count minutes.', ['count' => config('auth.passwords.users.expire')]))
-            ->line(Lang::getFromJson('If you did not request a password reset, no further action is required. Token: ==>'. $this->token));
+            ->line(Lang::getFromJson('If you did not request a password reset, no further action is required.'));
     }
 
     /**
