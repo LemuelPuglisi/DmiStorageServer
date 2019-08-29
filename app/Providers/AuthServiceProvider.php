@@ -2,6 +2,13 @@
 
 namespace App\Providers;
 
+use App\Policies\CoursePolicy;
+use App\Policies\FolderPolicy;
+use App\Policies\FilePolicy;
+use App\Models\Course;
+use App\Models\Folder;
+use App\Models\File;
+
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -15,6 +22,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         'App\Model' => 'App\Policies\ModelPolicy',
+        Course::class => CoursePolicy::class,
+        Folder::class => FolderPolicy::class,
+        File::class => FilePolicy::class,
     ];
 
     /**

@@ -23,7 +23,7 @@ class RegisterController extends Controller
 
     use RegistersUsers;
 
-    const USER = 1; 
+    const USER = 1;
 
     /**
      * Where to redirect users after registration.
@@ -67,7 +67,7 @@ class RegisterController extends Controller
     {
         return User::create([
             'name' => $data['name'],
-            'role' => self::USER, 
+            'role' => self::USER,
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);

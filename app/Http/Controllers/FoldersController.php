@@ -7,6 +7,7 @@ use App\Models\Folder;
 use App\Models\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class FoldersController extends Controller
 {
@@ -30,19 +31,16 @@ class FoldersController extends Controller
      */
     public function course($id)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['error'] = 'Folder not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null;
+            $json['error'] = 'Folder not found';
+            return response()->json($json, 404);
         }
 
-        $jsonResponse['content'] = $folder->course;
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['content'] = $folder->course;
+        return response()->json($json, 200);
     }
     
     
@@ -53,19 +51,16 @@ class FoldersController extends Controller
      */
     public function files($id)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['error'] = 'Folder not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null;
+            $json['error'] = 'Folder not found';
+            return response()->json($json, 404);
         }
 
-        $jsonResponse['content'] = $folder->files;
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['content'] = $folder->files;
+        return response()->json($json, 200);
     }
 
 
@@ -76,24 +71,22 @@ class FoldersController extends Controller
      */
     public function orderedFiles($id, $param, $order)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['error'] = 'Folder not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null;
+            $json['error'] = 'Folder not found';
+            return response()->json($json, 404);
         }
 
         if (!in_array($param, File::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
-            $jsonResponse['error'] = 'Params must be id, influence or timestamps and order must be desc or asc';
-            return response()->json($jsonResponse, 400);
+            $json['content'] = null;
+            $json['error'] = 'Params must be id, influence or timestamps and order must be desc or asc';
+            return response()->json($json, 400);
         }
 
-        $jsonResponse['content'] = $folder->orderedFiles($param, $order);
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['content'] = $folder->orderedFiles($param, $order);
+        return response()->json($json, 200);
     }
 
     
@@ -106,20 +99,16 @@ class FoldersController extends Controller
      */
     public function getFileByExt($id, $ext)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['error'] = 'Folder not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null;
+            $json['error'] = 'Folder not found';
+            return response()->json($json, 404);
         }
 
-        $files = $folder->files->where('extension', $ext);
-        $jsonResponse['content'] = $files;
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['content'] = $folder->files->where('extension', $ext);
+        return response()->json($json, 200);
     }
 
 
@@ -131,19 +120,16 @@ class FoldersController extends Controller
      */
     public function parent($id)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['error'] = 'Folder not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null;
+            $json['error'] = 'Folder not found';
+            return response()->json($json, 404);
         }
 
-        $jsonResponse['content'] = $folder->parent;
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['content'] = $folder->parent;
+        return response()->json($json, 200);
     }
 
 
@@ -154,19 +140,16 @@ class FoldersController extends Controller
      */
     public function subfolders($id)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['error'] = 'Folder not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null;
+            $json['error'] = 'Folder not found';
+            return response()->json($json, 404);
         }
 
-        $jsonResponse['content'] = $folder->subfolders;
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['content'] = $folder->subfolders;
+        return response()->json($json, 200);
     }
 
 
@@ -179,7 +162,11 @@ class FoldersController extends Controller
      */
     public function store(Request $request)
     {
-        $jsonResponse = ['message' => null];
+        if (Auth::user()->cant('create', Folder::class)) {
+            $json['message'] = 'Folder not created successfully';
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
+        }
 
         $validation = Validator::make($request->all(), [
             'display_name' => 'required|string|regex:/^[a-zA-Z0-9\s]+$/|max:255|unique:folders,display_name',
@@ -188,16 +175,18 @@ class FoldersController extends Controller
         ]);
     
         if ($validation->fails()) {
-            $jsonResponse['message'] = $validation->errors();
-            return response()->json($jsonResponse, 400);
+            $json['message'] = 'Folder not created successfully';
+            $json['error'] = $validation->errors();
+            return response()->json($json, 400);
         }
 
         $validStorageName = str_replace(' ', '_', $request->input('display_name'));
         $response = Storage::disk('local')->makeDirectory($validStorageName);
 
         if (!$response) {
-            $jsonResponse['message'] = 'Server Error, contact the sysAdmin';
-            return response()->json($jsonResponse, 500);
+            $json['message'] = 'Folder not created successfully';
+            $json['error'] = 'Server Error, contact the sysAdmin';
+            return response()->json($json, 500);
         }
 
         $folder = new Folder();
@@ -209,12 +198,14 @@ class FoldersController extends Controller
         $response = $folder->save();
 
         if (!$response) {
-            $jsonResponse['message'] = 'Database Error, contact the sysAdmin';
-            return response()->json($jsonResponse, 500);
+            $json['message'] = 'Folder not created successfully';
+            $json['error'] = 'Database Error, contact the sysAdmin';
+            return response()->json($json, 500);
         }
 
-        $jsonResponse['message'] = 'Folder successfully created';
-        return response()->json($jsonResponse, 200);
+        $json['message'] = 'Folder successfully created';
+        $json['error'] = null;
+        return response()->json($json, 200);
     }
 
 
@@ -227,20 +218,17 @@ class FoldersController extends Controller
      */
     public function show($id)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['error'] = 'Folder not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null;
+            $json['error'] = 'Folder not found';
+            return response()->json($json, 404);
         }
 
         $folder->increaseInfluence();
-        $jsonResponse['content'] = $folder;
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['content'] = $folder;
+        return response()->json($json, 200);
     }
 
 
@@ -256,12 +244,17 @@ class FoldersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $jsonResponse = ['message' => null];
-
         $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['message'] = 'Folder not found';
-            return response()->json($jsonResponse, 404);
+            $json['message'] = 'Folder not updated successfully';
+            $json['error'] = 'Folder not found';
+            return response()->json($json, 404);
+        }
+
+        if (Auth::user()->cant('update', $folder)) {
+            $json['message'] = 'Folder not updated successfully';
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
         }
 
         $validation = Validator::make($request->all(), [
@@ -271,18 +264,22 @@ class FoldersController extends Controller
         ]);
 
         if ($validation->fails()) {
-            $jsonResponse['message'] = $validation->errors();
-            return response()->json($jsonResponse, 400);
+            $json['message'] = 'Folder not updated successfully';
+            $json['error'] = $validation->errors();
+            return response()->json($json, 400);
         }
 
         if ($request->input('subfolder_of')) {
             $id = $request->input('subfolder_of');
             if ($id == -1) {
                 $folder->subfolder_of = null;
-            } elseif ($folder->id == $id || !Folder::find($id)) {
-                $jsonResponse['message'] = 'This folder cannot be a subfolder of itself or of folders that doesn\'t exists';
-                return response()->json($jsonResponse, 400);
-            } else {
+            } 
+            elseif ($folder->id == $id || !Folder::find($id)) {
+                $json['message'] = 'Folder not updated successfully';
+                $json['error'] = 'This folder cannot be a subfolder of itself or of folders that doesn\'t exists';
+                return response()->json($json, 400);
+            } 
+            else {
                 $folder->subfolder_of = $id;
             }
         }
@@ -293,14 +290,20 @@ class FoldersController extends Controller
             if (!Storage::disk('local')->exists($validStorageName)) {
                 $response = Storage::disk('local')->move($folder->storage_name, $validStorageName);
                 if (!$response) {
-                    $jsonResponse['message'] = 'Server Error, contact the sysAdmin';
-                    return response()->json($jsonResponse, 500);
+
+                    $json['error'] = 'Server Error, contact the sysAdmin';
+                    $json['message'] = 'Folder not updated successfully';
+                    return response()->json($json, 500);
+                
                 } else {
                     $folder->storage_name = $validStorageName;
                 }
             } else {
-                $jsonResponse['message'] = 'This folder name conflicts with server storage folders.';
-                return response()->json($jsonResponse, 500);
+                
+                $json['error'] = 'This folder name conflicts with server storage folders.';
+                $json['message'] = 'Folder not updated successfully';
+                return response()->json($json, 500);
+            
             }
         }
 
@@ -311,12 +314,14 @@ class FoldersController extends Controller
         $response = $folder->save();
 
         if (!$response) {
-            $jsonResponse['message'] = 'Database Error, contact the SysAdmin';
-            return response()->json($jsonResponse, 500);
+            $json['error'] = 'Database Error, contact the SysAdmin';
+            $json['message'] = 'Folder not updated successfully';
+            return response()->json($json, 500);
         }
 
-        $jsonResponse['message'] = 'Folder updated successfully';
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['message'] = 'Folder updated successfully';
+        return response()->json($json, 200);
     }
 
 
@@ -329,29 +334,31 @@ class FoldersController extends Controller
      */
     public function destroy($id)
     {
-        $jsonResponse = ['message' => null];
-
         $folder = Folder::find($id);
         if ($folder === null) {
-            $jsonResponse['message'] = 'Folder not found';
-            return response()->json($jsonResponse, 404);
+            $json['error'] = 'Folder not found';
+            $json['message'] = 'Folder not deleted successfully';
+            return response()->json($json, 404);
         }
 
         if (Storage::disk('local')->exists($folder->storage_name)) {
             $response = Storage::disk('local')->deleteDirectory($folder->storage_name);
             if (!$response) {
-                $jsonResponse['message'] = 'Server error, contact the sysAdmin';
-                return response()->json($jsonResponse, 500);
+                $json['message'] = 'Folder not deleted successfully';
+                $json['error'] = 'Server error, contact the sysAdmin';
+                return response()->json($json, 500);
             }
         }
 
         $response = $folder->delete();
         if (!$response) {
-            $jsonResponse['message'] = 'Database error, contact the sysAdmin';
-            return response()->json($jsonResponse, 500);
+            $json['message'] = 'Folder not deleted successfully';
+            $json['error'] = 'Database error, contact the sysAdmin';
+            return response()->json($json, 500);
         }
 
-        $jsonResponse['message'] = 'The folder has been successfully removed';
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['message'] = 'The folder has been successfully removed';
+        return response()->json($json, 200);
     }
 }

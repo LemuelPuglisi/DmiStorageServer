@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\PasswordResetNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Models\File; 
+use App\Models\File;
 
 class User extends Authenticatable
 {
@@ -28,7 +28,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 
+        'password', 'remember_token',
     ];
 
     /**
@@ -41,15 +41,30 @@ class User extends Authenticatable
     ];
 
     /**
-     *  User uploaded files 
+     *  User uploaded files
      */
     public function files()
     {
         return $this->hasMany(File::class);
     }
 
+    public function isUser()
+    {
+        return $this->role == 1;
+    }
+
+    public function isAdmin()
+    {
+        return $this->role == 2;
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->role == 3;
+    }
+
     /**
-     * Reset password customization 
+     * Reset password customization
      */
     public function sendPasswordResetNotification($token)
     {

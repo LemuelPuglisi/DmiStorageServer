@@ -6,9 +6,16 @@ use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\Folder;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class CoursesController extends Controller
 {
+
+    /**
+     *  Initialize an Instance of the controller
+     */
+    public function __construct() { }
 
 
     /**
@@ -30,15 +37,14 @@ class CoursesController extends Controller
     public function orderedIndex($param, $order)
     {
         if (!in_array($param, Course::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
-            return response()->json([
-                'content' => null,
-                'error' => 'Params must be year, id, cfu or timestamps and order must be desc or asc'
-            ], 400);
+            $json['error'] = 'Params must be year, id, cfu or timestamps and order must be desc or asc'; 
+            $json['content'] = null; 
+            return response()->json($json, 400);
         }
-        return response()->json([
-            'content' => Course::orderBy($param, $order)->get(),
-            'error' => null
-        ], 200);
+
+        $json['error'] = null;  
+        $json['content'] = Course::orderBy($param, $order)->get(); 
+        return response()->json($json, 200);
     }
 
 
@@ -51,24 +57,22 @@ class CoursesController extends Controller
      */
     public function folders($id, Request $request)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $course = Course::find($id);
         if ($course === null) {
-            $jsonResponse['error'] = 'Course not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null; 
+            $json['error'] = 'Course not found';
+            return response()->json($json, 404);
         }
 
         if ($request->input('root')) {
-            $jsonResponse['content'] = $course->rootFolders;
-            return response()->json($jsonResponse, 200);
+            $json['error'] = null; 
+            $json['content'] = $course->rootFolders;
+            return response()->json($json, 200);
         }
 
-        $jsonResponse['content'] = $course->folders;
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null; 
+        $json['content'] = $course->folders;
+        return response()->json($json, 200);
     }
 
 
@@ -81,20 +85,17 @@ class CoursesController extends Controller
      */
     public function orderedFolders($id, $param, $order, Request $request)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $course = Course::find($id);
         if ($course === null) {
-            $jsonResponse['error'] = 'Course not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null; 
+            $json['error'] = 'Course not found';
+            return response()->json($json, 404);
         }
 
         if (!in_array($param, Folder::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
-            $jsonResponse['error'] = 'Params must be id, influence or timestamps and order must be desc or asc';
-            return response()->json($jsonResponse, 400);
+            $json['content'] = null;
+            $json['error'] = 'Params must be id, influence or timestamps and order must be desc or asc';
+            return response()->json($json, 400);
         }
 
         $folders = $course->orderedFolders($param, $order);
@@ -102,8 +103,9 @@ class CoursesController extends Controller
             $folders = $folders->where('subfolder_of', null);
         }
 
-        $jsonResponse['content'] = $folders;
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['content'] = $folders;
+        return response()->json($json, 200);
     }
 
 
@@ -115,27 +117,23 @@ class CoursesController extends Controller
     */
     public function getMostViewedFiles($id, $limit)
     {
-        $jsonResponse = [
-            'content' => null,
-            'error' => null
-        ];
-
         $course = Course::find($id);
         if ($course === null) {
-            $jsonResponse['error'] = 'Course not found';
-            return response()->json($jsonResponse, 404);
+            $json['content'] = null;
+            $json['error'] = 'Course not found';
+            return response()->json($json, 404);
         }
 
         if (!ctype_digit($limit)) {
-            $jsonResponse['error'] = 'Limit must be an integer';
-            return response()->json($jsonResponse, 400);
+            $json['content'] = null;
+            $json['error'] = 'Limit must be an integer';
+            return response()->json($json, 400);
         }
 
-        $jsonResponse['content'] = $course->mostViewedFiles($limit);
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['content'] = $course->mostViewedFiles($limit);
+        return response()->json($json, 200);
     }
-
-
 
     /**
      * Store a newly created resource in storage.
@@ -150,12 +148,17 @@ class CoursesController extends Controller
             'year' => 'required|max:2',
             'cfu' => 'required|numeric'
         ]);
+        
+        if (Auth::user()->cant('create', Course::class)) {
+            $json['message'] = 'Course not created successfully';
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
+        }
 
         if ($validation->fails()) {
-            return response()->json([
-                'message' => 'Course not created successfully',
-                'errors' => $validation->errors()
-            ], 400);
+            $json['message'] = 'Course not created successfully';
+            $json['error'] = $validation->errors();
+            return response()->json($json, 400);
         }
 
         $course = new Course();
@@ -164,10 +167,9 @@ class CoursesController extends Controller
         $course->cfu = $request->input('cfu');
         $course->save();
 
-        return response()->json([
-            'message' => 'Course created successfully',
-            'errors' => null
-        ], 200);
+        $json['message'] = 'Course created successfully';
+        $json['error'] = null;
+        return response()->json($json, 200);
     }
 
 
@@ -200,14 +202,16 @@ class CoursesController extends Controller
     {
         $course = Course::find($id);
 
-        $jsonResponse = [
-            'message' => '',
-            'error' => null
-        ];
+        if (Auth::user()->cant('update', $course)) {
+            $json['message'] = 'Course not updated successfully';
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
+        }
 
         if ($course === null) {
-            $jsonResponse['message'] = 'Course not found';
-            return response()->json($jsonResponse, 404);
+            $json['message'] = 'Course not updated successfully';
+            $json['error'] = 'Course not found';
+            return response()->json($json, 404);
         }
 
         $validation = Validator::make($request->all(), [
@@ -217,20 +221,22 @@ class CoursesController extends Controller
         ]);
 
         if ($validation->fails()) {
-            $jsonResponse['message'] = 'Course not created successfully';
-            $jsonResponse['errors'] = $validation->errors();
-            return response()->json($jsonResponse, 400);
+            $json['message'] = 'Course not updated successfully';
+            $json['error'] = $validation->errors();
+            return response()->json($json, 400);
         }
 
         $response = $course->update($request->all());
 
         if (!$response) {
-            $jsonResponse['message'] = 'Server Error, contact the SysAdmin';
-            return response()->json($jsonResponse, 500);
+            $json['message'] = 'Course not updated successfully';
+            $json['error'] = 'Server Error, contact the SysAdmin';
+            return response()->json($json, 500);
         }
 
-        $jsonResponse['message'] = 'Course updated successfully';
-        return response()->json($jsonResponse, 200);
+        $json['error'] = null;
+        $json['message'] = 'Course updated successfully';
+        return response()->json($json, 200);
     }
 
 
@@ -244,22 +250,28 @@ class CoursesController extends Controller
     public function destroy($id)
     {
         $course = Course::find($id);
-        
+
         if ($course === null) {
-            return response()->json([
-                'message' => 'Course not found'
-            ], 404);
+            $json['message'] = 'Course not deleted successfully';
+            $json['error'] = 'Course not found';
+            return response()->json($json, 404);
+        }
+
+        if (Auth::user()->cant('update', $course)) {
+            $json['message'] = 'Course not deleted successfully';
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
         }
 
         $response = $course->delete();
         if (!$response) {
-            return response()->json([
-                'message' => 'Server Error, contact the SysAdmin'
-            ], 500);
+            $json['message'] = 'Course not deleted successfully';
+            $json['error'] = 'Server Error, contact the SysAdmin';
+            return response()->json($json, 500);
         }
 
-        return response()->json([
-            'message' => 'Course successfully deleted'
-        ], 200);
+        $json['message'] = 'Course successfully deleted';
+        $json['error'] = null;
+        return response()->json($json, 200);
     }
 }
