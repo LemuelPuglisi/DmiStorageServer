@@ -21,8 +21,14 @@ use Illuminate\Http\Request;
         /**
          *  Authenticated user routes
          */
+        Route::get('users', 'UserController@index')->name('users.index'); 
+        Route::get('users/admins', 'UserController@indexAdmins')->name('users.index.admins'); 
         Route::get('user', 'UserController@details')->name('user.details'); 
-
+        Route::delete('users/{id}', 'UserController@destroy')->name('user.delete');  
+        Route::put('users/{id}', 'UserController@update')->name('user.update'); 
+        Route::put('users/{id}/role', 'UserController@changeRole')->name('user.update.role');
+        Route::get('users/{id}/portability', 'UserController@portability')->name('user.portability'); 
+        
         /**
          *  Authenticated courses routes
          */
@@ -62,6 +68,7 @@ use Illuminate\Http\Request;
     Route::get('courses/{id}/folders', 'CourseController@folders')->name('courses.folders'); 
     Route::get('courses/{id}/folders/sort/{param}/{order}', 'CourseController@orderedFolders')->name('courses.folders.sort'); 
     Route::get('courses/{id}/trend/{limit}', 'CourseController@getMostViewedFiles')->name('courses.trend'); 
+    Route::get('courses/{id}/user', 'CourseController@user')->name('courses.user'); 
 
     /*
     *   Folders Routing  
@@ -73,6 +80,7 @@ use Illuminate\Http\Request;
     Route::get('folders/{id}/subfolders', 'FolderController@subfolders')->name('folders.subfolders'); 
     Route::get('folders/{id}/files/sort/{param}/{order}', 'FolderController@orderedFiles')->name('folders.files.sort'); 
     Route::get('folders/{id}/files/{ext}/ext', 'FolderController@getFileByExt')->name('folders.files.extension');
+    Route::get('folders/{id}/user', 'FolderController@user')->name('folders.user'); 
 
     /*
     *   Files Routing  

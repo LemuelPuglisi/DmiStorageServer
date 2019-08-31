@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password'
     ];
 
     /**
@@ -40,12 +40,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     *  User uploaded files
-     */
     public function files()
     {
         return $this->hasMany(File::class);
+    }
+
+    public function folders()
+    {
+        return $this->hasMany(Folder::class);
+    }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
     }
 
     public function isUser()

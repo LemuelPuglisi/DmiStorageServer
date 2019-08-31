@@ -15,6 +15,11 @@ class Course extends Model
         'id', 'year', 'cfu', 'created_at', 'updated_at'
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+
 
     public function folders()
     {

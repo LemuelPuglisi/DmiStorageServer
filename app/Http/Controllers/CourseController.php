@@ -79,6 +79,26 @@ class CourseController extends Controller
 
 
     /**
+     * Display the creator of the current folder
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function user($id)
+    {
+        $course = Course::find($id);
+        if ($course === null) {
+            $json['username'] = null;
+            $json['error'] = 'Course not found';
+            return response()->json($json, 404);
+        }
+
+        $json['error'] = null;
+        $json['username'] = $course->user->name;
+        return response()->json($json, 200);
+    }
+
+
+    /**
      * Display an ordered list of the folders contained
      * in a Course, if you pass root=true then it will
      * display only the root ones.
@@ -167,6 +187,7 @@ class CourseController extends Controller
         $course->name = $request->input('name');
         $course->year = $request->input('year');
         $course->cfu = $request->input('cfu');
+        $course->creator_id = Auth::user()->id; 
         $course->save();
 
         $json['message'] = 'Course created successfully';
@@ -204,16 +225,16 @@ class CourseController extends Controller
     {
         $course = Course::find($id);
 
-        if (Auth::user()->cant('update', $course)) {
-            $json['message'] = 'Course not updated successfully';
-            $json['error'] = 'Unauthorized';
-            return response()->json($json, 403);
-        }
-
         if ($course === null) {
             $json['message'] = 'Course not updated successfully';
             $json['error'] = 'Course not found';
             return response()->json($json, 404);
+        }
+
+        if (Auth::user()->cant('update', $course)) {
+            $json['message'] = 'Course not updated successfully';
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
         }
 
         $validation = Validator::make($request->all(), [

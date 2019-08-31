@@ -20,6 +20,10 @@ class Folder extends Model
         return $this->belongsTo(Course::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
 
     public function files()
     {

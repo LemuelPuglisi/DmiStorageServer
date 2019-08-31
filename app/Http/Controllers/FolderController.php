@@ -153,6 +153,25 @@ class FolderController extends Controller
     }
 
 
+    /**
+     * Display the creator of the current folder
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function user($id)
+    {
+        $folder = Folder::find($id);
+        if ($folder === null) {
+            $json['username'] = null;
+            $json['error'] = 'Folder not found';
+            return response()->json($json, 404);
+        }
+
+        $json['error'] = null;
+        $json['username'] = $folder->user->name;
+        return response()->json($json, 200);
+    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -195,6 +214,7 @@ class FolderController extends Controller
         $folder->influence = 0;
         $folder->subfolder_of = $request->input('subfolder_of') ?? null;
         $folder->course_id = $request->input('course_id');
+        $folder->creator_id = Auth::user()->id; 
         $response = $folder->save();
 
         if (!$response) {
