@@ -9,13 +9,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 
-class CoursesController extends Controller
+class CourseController extends Controller
 {
 
     /**
      *  Initialize an Instance of the controller
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
 
     /**
@@ -37,13 +39,13 @@ class CoursesController extends Controller
     public function orderedIndex($param, $order)
     {
         if (!in_array($param, Course::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
-            $json['error'] = 'Params must be year, id, cfu or timestamps and order must be desc or asc'; 
-            $json['content'] = null; 
+            $json['error'] = 'Params must be year, id, cfu or timestamps and order must be desc or asc';
+            $json['content'] = null;
             return response()->json($json, 400);
         }
 
-        $json['error'] = null;  
-        $json['content'] = Course::orderBy($param, $order)->get(); 
+        $json['error'] = null;
+        $json['content'] = Course::orderBy($param, $order)->get();
         return response()->json($json, 200);
     }
 
@@ -59,18 +61,18 @@ class CoursesController extends Controller
     {
         $course = Course::find($id);
         if ($course === null) {
-            $json['content'] = null; 
+            $json['content'] = null;
             $json['error'] = 'Course not found';
             return response()->json($json, 404);
         }
 
         if ($request->input('root')) {
-            $json['error'] = null; 
+            $json['error'] = null;
             $json['content'] = $course->rootFolders;
             return response()->json($json, 200);
         }
 
-        $json['error'] = null; 
+        $json['error'] = null;
         $json['content'] = $course->folders;
         return response()->json($json, 200);
     }
@@ -87,7 +89,7 @@ class CoursesController extends Controller
     {
         $course = Course::find($id);
         if ($course === null) {
-            $json['content'] = null; 
+            $json['content'] = null;
             $json['error'] = 'Course not found';
             return response()->json($json, 404);
         }

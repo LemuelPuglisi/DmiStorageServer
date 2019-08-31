@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
-class FoldersController extends Controller
+class FolderController extends Controller
 {
 
 
@@ -273,13 +273,11 @@ class FoldersController extends Controller
             $id = $request->input('subfolder_of');
             if ($id == -1) {
                 $folder->subfolder_of = null;
-            } 
-            elseif ($folder->id == $id || !Folder::find($id)) {
+            } elseif ($folder->id == $id || !Folder::find($id)) {
                 $json['message'] = 'Folder not updated successfully';
                 $json['error'] = 'This folder cannot be a subfolder of itself or of folders that doesn\'t exists';
                 return response()->json($json, 400);
-            } 
-            else {
+            } else {
                 $folder->subfolder_of = $id;
             }
         }
@@ -290,20 +288,16 @@ class FoldersController extends Controller
             if (!Storage::disk('local')->exists($validStorageName)) {
                 $response = Storage::disk('local')->move($folder->storage_name, $validStorageName);
                 if (!$response) {
-
                     $json['error'] = 'Server Error, contact the sysAdmin';
                     $json['message'] = 'Folder not updated successfully';
                     return response()->json($json, 500);
-                
                 } else {
                     $folder->storage_name = $validStorageName;
                 }
             } else {
-                
                 $json['error'] = 'This folder name conflicts with server storage folders.';
                 $json['message'] = 'Folder not updated successfully';
                 return response()->json($json, 500);
-            
             }
         }
 

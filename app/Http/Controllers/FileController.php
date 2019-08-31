@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use ZipArchive;
 
-class FilesController extends Controller
+class FileController extends Controller
 {
 
 
@@ -136,7 +136,7 @@ class FilesController extends Controller
         if (!$response) {
             Storage::disk('local')->delete("{$folderpath}/{$uid}.{$ext}");
             $json['error'] = 'Database Error, contact the sysAdmin';
-            $json['message'] = 'File not uploaded successfully'; 
+            $json['message'] = 'File not uploaded successfully';
             return response()->json($json, 500);
         }
 
