@@ -49,7 +49,7 @@ use Illuminate\Http\Request;
     /**
      * User Routing (Throttle limit)
     */
-    Route::middleware('throttle:5,10')->group(function () {
+    Route::middleware('throttle:10,10')->group(function () {
 
         Route::post('auth/signup', 'UserController@register')->name('user.signup');
         Route::post('auth/forgot', 'ForgotPasswordController@sendResetLinkEmail')->name('user.forgot');

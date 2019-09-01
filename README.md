@@ -2,7 +2,7 @@
 
 Departement of Mathematics and Informatics cloud based storage server.
 
-The [**project wiki**](https://github.com/LemuelPuglisi/DmiStorageServer/wiki) contains all the APIs this server offers.
+The [**API Documentation**](https://documenter.getpostman.com/view/8215228/SVfRv8rQ?version=latest) contains all the APIs this server offers.
 
 *****
 

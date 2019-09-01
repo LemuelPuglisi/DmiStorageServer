@@ -278,6 +278,7 @@ class FileController extends Controller
             ], 404);
         }
 
+        $file->increaseInfluence();
         $folder = Folder::find($file->folder_id);
         $path = "{$folder->storage_name}/{$file->uid}.{$file->extension}";
         return response()->download((storage_path("app/{$path}")));
@@ -300,6 +301,7 @@ class FileController extends Controller
             ], 404);
         }
 
+        $file->increaseInfluence();
         $folder = Folder::find($file->folder_id);
         $path = "{$folder->storage_name}/{$file->uid}.{$file->extension}";
         return response()->file((storage_path("app/{$path}")));
