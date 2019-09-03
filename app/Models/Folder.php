@@ -22,7 +22,9 @@ class Folder extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'creator_id');
+        return $this->belongsTo(User::class, 'creator_id')->withDefault([
+            'name' => '[deleted user]',            
+        ]);
     }
 
     public function files()

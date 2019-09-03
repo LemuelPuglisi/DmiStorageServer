@@ -20,13 +20,13 @@ class CreateFilesTable extends Migration
             $table->string('author');
             $table->string('extension'); 
             $table->integer('influence');
-            $table->unsignedbigInteger('user_id');
+            $table->unsignedbigInteger('user_id')->nullable();
             $table->unsignedbigInteger('folder_id');
             $table->timestamps();
         });
 
         Schema::table('files', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('folder_id')->references('id')->on('folders')->onDelete('cascade');
             $table->engine = 'InnoDB';
         });

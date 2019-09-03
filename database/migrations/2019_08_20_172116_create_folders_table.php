@@ -20,14 +20,14 @@ class CreateFoldersTable extends Migration
             $table->integer('influence');
             $table->unsignedbigInteger('subfolder_of')->nullable();
             $table->unsignedbigInteger('course_id');
-            $table->unsignedbigInteger('creator_id');
+            $table->unsignedbigInteger('creator_id')->nullable();
             $table->timestamps();
         });
 
         Schema::table('folders', function (Blueprint $table) {
             $table->foreign('subfolder_of')->references('id')->on('folders')->onDelete('cascade');
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('set null');
             $table->engine = 'InnoDB';
         });
     }

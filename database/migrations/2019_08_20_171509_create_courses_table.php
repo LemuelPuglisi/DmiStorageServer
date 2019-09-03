@@ -18,12 +18,12 @@ class CreateCoursesTable extends Migration
             $table->string('name');
             $table->integer('year');
             $table->integer('cfu');
-            $table->unsignedbigInteger('creator_id');
+            $table->unsignedbigInteger('creator_id')->nullable();
             $table->timestamps();
         });
 
         Schema::table('courses', function (Blueprint $table) {
-            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('set null');
             $table->engine = 'InnoDB';
         });
     }
