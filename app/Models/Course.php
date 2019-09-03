@@ -51,4 +51,10 @@ class Course extends Model
                 ->limit($limit)
                 ->get();
     }
+
+    
+    public function requests()
+    {
+        return $this->hasMany(Request::class);
+    }
 }

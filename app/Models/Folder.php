@@ -56,4 +56,11 @@ class Folder extends Model
         $this->influence ++;
         $this->save();
     }
+
+
+    public function requests()
+    {
+        return $this->hasMany(Request::class);
+    }
+    
 }

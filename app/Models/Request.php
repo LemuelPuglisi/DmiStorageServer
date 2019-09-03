@@ -10,10 +10,12 @@ class Request extends Model
         'course_id', 'folder_id', 'permissions', 'notes', 'lifespan'    
     ]; 
 
+
     public function requester()
     {
         return $this->belongsTo(User::class, 'user_id'); 
     }
+
 
     public function authorizer()
     {
@@ -22,11 +24,13 @@ class Request extends Model
         ]); 
     }
 
+
     public function course()
     {
         return $this->belongsTo(Course::class, 'course_id'); 
     }    
 
+    
     public function folder()
     {
         return $this->belongsTo(Folder::class, 'folder_id')->withDefault([

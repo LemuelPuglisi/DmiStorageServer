@@ -77,4 +77,21 @@ class User extends Authenticatable
     {
         $this->notify(new PasswordResetNotification($token));
     }
+
+    
+    public function requests()
+    {
+        return $this->hasMany(Request::class);
+    }
+
+    // need to categorize the requests as: 
+
+    // pending requests
+
+    // authorized requests
+
+    // refused requests
+
+    // expired requests
+
 }
