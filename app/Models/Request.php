@@ -11,25 +11,23 @@ class Request extends Model
     ]; 
 
 
-    public $permissionSchema; 
+    public $timestamps = false;
 
-    public function __constructor()
-    {
-        $this->$permissionSchema = [
-            'course' => [
-                'update' => false, 
-                'delete' => false, 
-                'create' => false, 
-                'global' => false, 
-            ], 
-            'folder' => [
-                'update' => false, 
-                'delete' => false,
-                'manage' => false, 
-                'remove' => false,
-            ],
-        ];
-    }
+
+    static public $permissionSchema = [
+        'course' => [
+            'update' => false, 
+            'delete' => false, 
+            'create' => false, 
+            'global' => false, 
+        ], 
+        'folder' => [
+            'update' => false, 
+            'delete' => false,
+            'manage' => false, 
+            'remove' => false,
+        ],
+    ];
 
 
     public function requester()

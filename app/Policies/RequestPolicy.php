@@ -24,7 +24,7 @@ class RequestPolicy
 
     public function create(User $user)
     {
-        //
+        return !$user->isAdmin() && !$user->isSuperAdmin(); 
     }
 
 

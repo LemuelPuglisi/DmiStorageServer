@@ -96,6 +96,3 @@ use Illuminate\Http\Request;
     Route::get('files/{id}/stream', 'FileController@streamFile')->name('files.stream'); 
     Route::get('files/{id}/folder', 'FileController@folder')->name('files.folder'); 
     Route::get('files/{id}/user', 'FileController@user')->name('files.user'); 
-
-
-
