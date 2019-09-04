@@ -44,6 +44,11 @@ use Illuminate\Http\Request;
          */
         Route::resource('files', 'FileController')->only(['store', 'update', 'destroy']);
 
+        /**
+         *  Authenticated requests routes
+         */
+        Route::resource('requests', 'RequestController')->except(['create', 'edit', 'update']); 
+    
     });
 
     /**
