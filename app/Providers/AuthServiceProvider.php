@@ -6,12 +6,14 @@ use App\Policies\CoursePolicy;
 use App\Policies\FolderPolicy;
 use App\Policies\FilePolicy;
 use App\Policies\UserPolicy;
-use App\Policies\RequestPolicy; 
+use App\Policies\CourseRequestPolicy; 
+use App\Policies\FolderRequestPolicy;
 use App\Models\Course;
 use App\Models\Folder;
 use App\Models\File;
 use App\Models\User;
-use App\Models\Request; 
+use App\Models\CourseRequest; 
+use App\Models\FolderRequest;
 
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Gate;
@@ -30,7 +32,8 @@ class AuthServiceProvider extends ServiceProvider
         Folder::class => FolderPolicy::class,
         File::class => FilePolicy::class,
         User::class => UserPolicy::class,
-        Request::class => RequestPolicy::class,
+        CourseRequest::class => CourseRequestPolicy::class, 
+        FolderRequest::class => FolderRequestPolicy::class,
     ];
 
     /**

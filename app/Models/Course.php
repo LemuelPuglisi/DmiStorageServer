@@ -55,6 +55,6 @@ class Course extends Model
     
     public function requests()
     {
-        return $this->hasMany(Request::class);
+        return $this->hasMany(CourseRequest::class);
     }
 }

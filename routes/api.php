@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
+| **Commented APIs has to be implemented.
 */
 
     /**
@@ -28,27 +29,37 @@ use Illuminate\Http\Request;
         Route::put('users/{id}', 'UserController@update')->name('user.update'); 
         Route::put('users/{id}/role', 'UserController@changeRole')->name('user.update.role');
         Route::get('users/{id}/portability', 'UserController@portability')->name('user.portability'); 
-        
+        // Route::get('user/{id}/courses/requests/{status}', 'UserController@courseRequests')->name('user.course.requests');
+        // Route::get('user/{id}/folders/requests/{status}', 'UserController@folderRequests')->name('user.folder.requests');        
+
         /**
          *  Authenticated courses routes
          */
         Route::resource('courses', 'CourseController')->only(['store', 'update', 'destroy']);
+        // Route::get('courses/{id}/requests/{status}', 'CourseController@requests')->name(courses.requests); 
 
         /**
          *  Authenticated folders routes
          */
         Route::resource('folders', 'FolderController')->only(['store', 'update', 'destroy']);
-
+        // Route::get('folders/{id}/requests/{status}', 'FolderController@requests')->name(folders.requests);
+        
         /**
          *  Authenticated files routes
          */
         Route::resource('files', 'FileController')->only(['store', 'update', 'destroy']);
 
         /**
-         *  Authenticated requests routes
+         *  Authenticated course requests routes
          */
-        Route::resource('requests', 'RequestController')->except(['create', 'edit', 'update']); 
+        Route::resource('courses/requests', 'CourseRequestController')->except(['create', 'edit', 'update']); 
+        Route::put('courses/requests/{id}/manage', 'CourseRequestController@manage')->name('coursesRequest.manage'); 
     
+        /**
+         *  Authenticated folder requests routes
+         */
+        // Route::resource('folders/requests', 'FolderRequestController')->except(['create', 'edit', 'update']); 
+
     });
 
     /**

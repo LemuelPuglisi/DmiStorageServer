@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRequestsTable extends Migration
+class CreateCourseRequestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,27 +13,23 @@ class CreateRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('requests', function (Blueprint $table) {
+        Schema::create('course_requests', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedbigInteger('user_id');
             $table->string('status');
-            $table->unsignedbigInteger('course_id');
-            $table->unsignedbigInteger('folder_id')->nullable();
-            $table->boolean('is_upgrade')->default(false); 
-            $table->json('permissions'); 
+            $table->unsignedbigInteger('course_id'); 
             $table->mediumText('notes');
-            $table->boolean('authorized')->nullable();
-            $table->unsignedbigInteger('authorizer_id')->nullable(); 
-            $table->timestamp('requested_at')->useCurrent(); 
             $table->integer('lifespan');
-            $table->timestamp('authorized_at')->nullable(); 
-            $table->timestamp('expiration_date')->nullable();   
+            $table->timestamp('requested_at')->useCurrent(); 
+            $table->boolean('authorized')->nullable()->default(null);
+            $table->unsignedbigInteger('authorizer_id')->nullable()->default(null);
+            $table->timestamp('authorized_at')->nullable()->default(null);; 
+            $table->timestamp('expiration_date')->nullable()->default(null);; 
         });
 
-        Schema::table('requests', function (Blueprint $table) {
+        Schema::table('course_requests', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade'); 
-            $table->foreign('folder_id')->references('id')->on('folders')->onDelete('cascade');
             $table->foreign('authorizer_id')->references('id')->on('users')->onDelete('cascade');
             $table->engine = 'InnoDB';
         });
@@ -46,6 +42,6 @@ class CreateRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('requests');
+        Schema::dropIfExists('course_requests');
     }
 }
