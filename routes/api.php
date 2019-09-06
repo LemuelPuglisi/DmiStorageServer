@@ -29,14 +29,14 @@ use Illuminate\Http\Request;
         Route::put('users/{id}', 'UserController@update')->name('user.update'); 
         Route::put('users/{id}/role', 'UserController@changeRole')->name('user.update.role');
         Route::get('users/{id}/portability', 'UserController@portability')->name('user.portability'); 
-        // Route::get('user/{id}/courses/requests/{status}', 'UserController@courseRequests')->name('user.course.requests');
-        // Route::get('user/{id}/folders/requests/{status}', 'UserController@folderRequests')->name('user.folder.requests');        
+        Route::get('user/{id}/courses/requests', 'UserController@courseRequests')->name('user.course.requests');
+        // Route::get('user/{id}/folders/requests', 'UserController@folderRequests')->name('user.folder.requests');        
 
         /**
          *  Authenticated courses routes
          */
         Route::resource('courses', 'CourseController')->only(['store', 'update', 'destroy']);
-        // Route::get('courses/{id}/requests/{status}', 'CourseController@requests')->name(courses.requests); 
+        Route::get('courses/{id}/requests', 'CourseController@requests')->name('courses.requests'); 
 
         /**
          *  Authenticated folders routes

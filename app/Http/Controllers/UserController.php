@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\CourseController; 
 
 class UserController extends Controller
 {
@@ -267,5 +268,53 @@ class UserController extends Controller
         $json['error'] = null;
         $json['content'] = $user->files;
         return response()->json($json, 200);
+    }
+
+
+    /**
+     * Show user course requests by status
+     */
+    public function courseRequests($id, Request $request)
+    {
+        $user = User::find($id);
+        if ($user === null) {
+            $json['content'] = null; 
+            $json['error'] = 'User not found'; 
+            return response()->json($json, 404); 
+        } 
+
+        if ($user->isAdmin() || $user->isSuperAdmin()) {
+            $json['content'] = null; 
+            $json['error'] = 'Admins can\'t make requests';
+            return response()->json($json, 400);
+        } 
+
+        if (Auth::user()->cant('getRequests', $user)) {
+            $json['content'] = null; 
+            $json['error'] = 'Unauthorized'; 
+            return response()->json($json, 403); 
+        }
+
+        $validation = Validator::make($request->all(), [
+            'status' => 'string|in:pending,active,refused,expired'
+        ]);
+
+        if ($validation->fails()) {
+            $json['content'] = null; 
+            $json['error'] = $validation->errors(); 
+            return response()->json($json, 400); 
+        }
+
+        $json['error'] = null; 
+        $json['content'] = null;
+
+        if (!$request->has('status')) {
+            $json['content'] = $user->courseRequests; 
+        }
+        else {
+            $json['content'] = $user->courseRequestsByStatus($request->status); 
+        }
+        
+        return response()->json($json, 200); 
     }
 }

@@ -91,4 +91,10 @@ class CoursePolicy
     {
         return $user->isAdmin() || $user->isSuperAdmin();
     }
+
+     
+    public function getRequests(User $user)
+    {
+        return $user->isAdmin() || $user->isSuperAdmin();
+    }
 }

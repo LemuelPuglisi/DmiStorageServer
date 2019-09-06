@@ -297,4 +297,43 @@ class CourseController extends Controller
         $json['error'] = null;
         return response()->json($json, 200);
     }
+
+
+    public function requests($id, Request $request)
+    {
+        $course = Course::find($id); 
+        if ($course === null) {
+            $json['error'] = 'Course not found'; 
+            $json['content'] = null; 
+            return response()->json($json, 404); 
+        }
+
+        if (Auth::user()->cant('getRequests', Course::class)) {
+            $json['error'] = 'Unauthorized'; 
+            $json['content'] = null; 
+            return response()->json($json, 403); 
+        }
+
+        $validation = Validator::make($request->all(), [
+            'status' => 'string|in:pending,active,refused,expired'
+        ]);
+
+        if ($validation->fails()) {
+            $json['content'] = null; 
+            $json['error'] = $validation->errors(); 
+            return response()->json($json, 400); 
+        }
+
+        $json['error'] = null; 
+        $json['content'] = null;
+
+        if (!$request->has('status')) {
+            $json['content'] = $course->requests; 
+        }
+        else {
+            $json['content'] = $course->requestsByStatus($request->status); 
+        }
+        
+        return response()->json($json, 200); 
+    }
 }

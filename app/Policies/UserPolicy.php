@@ -64,4 +64,12 @@ class UserPolicy
     {
         return $user->isSuperAdmin() || $user->id === $target->id; 
     }
+
+    /**
+     *  Allow to get requests from a user
+     */
+    public function getRequests(User $user, User $target)
+    {
+        return $user->isAdmin() || $user->isSuperAdmin() || $user->id === $target->id; 
+    }
 }

@@ -57,4 +57,10 @@ class Course extends Model
     {
         return $this->hasMany(CourseRequest::class);
     }
+
+
+    public function requestsByStatus($status) 
+    {
+        return CourseRequest::all()->where('status', $status);
+    }
 }
