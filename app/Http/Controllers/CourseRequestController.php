@@ -29,6 +29,7 @@ class CourseRequestController extends Controller
 
         $json['error'] = null;
         $json['content'] = CourseRequest::all();
+        return response()->json($json, 200);
     }
 
 
@@ -65,7 +66,7 @@ class CourseRequestController extends Controller
 
         $validation = Validator::make($request->all(), [
             'course_id' => 'required|numeric|exists:courses,id', 
-            'notes' => 'required|between:10,400',
+            'notes' => 'required|string|between:10,400',
             'lifespan' => 'required|numeric|between:7,365', 
         ]); 
 
@@ -161,6 +162,8 @@ class CourseRequestController extends Controller
             $courseRequest->status = 'refused'; 
             $courseRequest->authorized = false; 
             $courseRequest->authorizer_id = Auth::user()->id;
+            $courseRequest->authorized_at = null;
+            $courseRequest->expiration_date = null; 
             $checkDBResponse = $courseRequest->save(); 
         }
 

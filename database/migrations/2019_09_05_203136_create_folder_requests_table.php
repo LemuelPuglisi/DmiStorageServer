@@ -18,7 +18,7 @@ class CreateFolderRequestsTable extends Migration
             $table->unsignedbigInteger('user_id');
             $table->string('status');
             $table->unsignedbigInteger('folder_id'); 
-            $table->boolean('is_upgrade')->default(false); 
+            $table->unsignedbigInteger('is_upgrade_of')->nullable()->default(null); 
             $table->json('permissions');
             $table->mediumText('notes');
             $table->integer('lifespan');
@@ -33,6 +33,7 @@ class CreateFolderRequestsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('folder_id')->references('id')->on('folders')->onDelete('cascade');
             $table->foreign('authorizer_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('is_upgrade_of')->references('id')->on('folder_requests');
             $table->engine = 'InnoDB';
         });
     }

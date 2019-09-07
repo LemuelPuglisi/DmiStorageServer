@@ -53,12 +53,14 @@ use Illuminate\Http\Request;
          *  Authenticated course requests routes
          */
         Route::resource('courses/requests', 'CourseRequestController')->except(['create', 'edit', 'update']); 
-        Route::put('courses/requests/{id}/manage', 'CourseRequestController@manage')->name('coursesRequest.manage'); 
+        Route::put('courses/requests/{id}/manage', 'CourseRequestController@manage')->name('courses.request.manage'); 
     
         /**
          *  Authenticated folder requests routes
          */
-        // Route::resource('folders/requests', 'FolderRequestController')->except(['create', 'edit', 'update']); 
+        Route::resource('folders/requests', 'FolderRequestController')->except(['create', 'edit', 'update']); 
+        Route::put('folders/requests/{id}/manage', 'FolderRequestController@manage')->name('folder.request.manage');
+        Route::put('folders/requests/{id}/upgrade', 'FolderRequestController@upgrade')->name('folder.request.upgrade'); 
 
     });
 
