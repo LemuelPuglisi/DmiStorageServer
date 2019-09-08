@@ -72,9 +72,8 @@ class User extends Authenticatable
         return $this->role == 3;
     }
 
-    /**
-     * Reset password customization
-     */
+    
+    // Reset password customization
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new PasswordResetNotification($token));
@@ -105,11 +104,27 @@ class User extends Authenticatable
         $request = CourseRequest::where('user_id', $this->id)
         ->where('status', 'active')
         ->where('course_id', $course->id)
+        ->where('expiration_date', '>', now())
         ->get();
 
         if ($request->isEmpty()) {
             return false;
         }
         return true;
+    }
+
+    public function getFolderPermission(Folder $folder)
+    {
+        $request = FolderRequest::where('user_id', $this->id)
+        ->where('status', 'active')
+        ->where('folder_id', $folder->id)
+        ->where('expiration_date', '>', now())
+        ->get()
+        ->first();
+
+        if ($request === null) {
+            return null;
+        }
+        return json_decode($request->permissions, true);
     }
 }

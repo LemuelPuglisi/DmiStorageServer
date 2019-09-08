@@ -1,5 +1,7 @@
 <?php
-
+/**
+ *  All the functions returns a json response.
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -12,11 +14,6 @@ use App\Models\FolderRequest;
 
 class UserController extends Controller
 {
-    
-    /**
-     * User roles ID
-     *
-     */
     const ROLES = [
         'user' => 1,
         'admn' => 2,
@@ -24,11 +21,6 @@ class UserController extends Controller
     ];
 
 
-    /**
-     *  Show a list of all the users
-     *
-     *  @return Illuminate\Http\Response;
-     */
     public function index()
     {
         if (Auth::user()->cant('index', User::class)) {
@@ -46,11 +38,6 @@ class UserController extends Controller
     }
 
 
-    /**
-     *  Show a list of all the admins
-     *
-     *  @return Illuminate\Http\Response;
-     */
     public function indexAdmins()
     {
         if (Auth::user()->cant('indexAdmins', User::class)) {
@@ -65,11 +52,6 @@ class UserController extends Controller
     }
 
 
-    /**
-     *  Change an user role
-     *
-     *  @return Illuminate\Http\Response;
-     */
     public function changeRole(Request $request, $id)
     {
         $user = User::find($id);
@@ -104,11 +86,6 @@ class UserController extends Controller
     }
 
     
-    /**
-     *  Delete user
-     *
-     *  @return Illuminate\Http\Response;
-     */
     public function destroy($id)
     {
         $user = User::find($id);
@@ -137,11 +114,6 @@ class UserController extends Controller
     }
 
 
-    /**
-     *  Get user portability
-     *
-     *  @return Illuminate\Http\Response;
-     */
     public function portability($id)
     {
         $user = User::find($id);
@@ -163,11 +135,7 @@ class UserController extends Controller
         return response()->json($json, 200);
     }
 
-    /**
-     *  update user
-     *
-     *  @return Illuminate\Http\Response;
-     */
+
     public function update(Request $request, $id)
     {
         $user = User::find($id);
@@ -206,11 +174,6 @@ class UserController extends Controller
     }
 
 
-    /**
-     * Create an user
-     *
-     * @return Illuminate\Http\Response;
-     */
     public function register(Request $request)
     {
         $validation = Validator::make($request->all(), [
@@ -244,19 +207,12 @@ class UserController extends Controller
     }
 
     
-    /**
-     * Show authenticated user details
-     *
-     * @return App\Models\User;
-     */
     public function details(Request $request)
     {
         return $request->user();
     }
 
-    /**
-     *  Show user uploaded files
-     */
+
     public function uploadedFiles($id)
     {
         $user = User::find($id);
@@ -272,9 +228,6 @@ class UserController extends Controller
     }
 
 
-    /**
-     * Show user course requests by status
-     */
     public function courseRequests($id, Request $request)
     {
         $user = User::find($id);
@@ -319,9 +272,6 @@ class UserController extends Controller
     }
 
 
-    /**
-     *  Show user folder requests by status
-     */
     public function folderRequests($id, Request $request)
     {
         $user = User::find($id);

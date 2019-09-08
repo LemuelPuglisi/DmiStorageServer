@@ -1,5 +1,7 @@
 <?php
-
+/**
+ *  All the functions returns a json response.
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -12,38 +14,18 @@ use ZipArchive;
 
 class FileController extends Controller
 {
-
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return response()->json(File::all(), 200);
     }
 
 
-
-    /**
-     * Display a listing of the resource with
-     * a specified extension.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function getFilesByExt($ext)
     {
         return response()->json(File::all()->where('extension', $ext), 200);
     }
 
 
-    
-    /**
-     * Display a listing of the files in a folder
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function folder($id)
     {
         $file = File::find($id);
@@ -59,11 +41,6 @@ class FileController extends Controller
     }
 
 
-    /**
-     * Display the uploader of the current file
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function user($id)
     {
         $file = File::find($id);
@@ -79,13 +56,6 @@ class FileController extends Controller
     }
 
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
@@ -102,7 +72,7 @@ class FileController extends Controller
         }
 
         $course_id = Folder::find($request->folder_id)->course_id;
-        if (Auth::user()->cant('create', [File::class, $course_id])) {
+        if (Auth::user()->cant('create', [File::class, $course_id, $request->folder_id])) {
             $json['message'] = 'File not uploaded successfully';
             $json['error'] = 'Unauthorized';
             return response()->json($json, 403);
@@ -147,13 +117,6 @@ class FileController extends Controller
     }
 
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $file = File::find($id);
@@ -170,14 +133,6 @@ class FileController extends Controller
     }
 
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $file = File::find($id);
@@ -218,13 +173,6 @@ class FileController extends Controller
     }
 
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $file = File::find($id);
@@ -263,13 +211,6 @@ class FileController extends Controller
     }
 
 
-
-    /**
-     * Download a file.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function downloadFile($id)
     {
         $file = File::find($id);
@@ -286,13 +227,6 @@ class FileController extends Controller
     }
 
 
-
-    /**
-     * Stream a file.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function streamFile($id)
     {
         $file = File::find($id);

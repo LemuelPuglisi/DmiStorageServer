@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\CourseRequest;
+use App\Models\FolderRequest;
 
 class CheckRequests extends Command
 {
@@ -39,6 +40,14 @@ class CheckRequests extends Command
     public function handle()
     {
         $requests = CourseRequest::all()->where('status', 'active')->where('expiration_date', '<=', now());
+
+        foreach ($requests as $request) {
+            $request->status = 'expired';
+            $request->authorized = false;
+            $request->save();
+        }
+
+        $requests = FolderRequest::all()->where('status', 'active')->where('expiration_date', '<=', now());
 
         foreach ($requests as $request) {
             $request->status = 'expired';

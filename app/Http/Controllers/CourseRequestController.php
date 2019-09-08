@@ -1,5 +1,7 @@
 <?php
-
+/**
+ *  All the functions returns a json response.
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -10,15 +12,6 @@ use App\Models\Course;
 
 class CourseRequestController extends Controller
 {
-    /**
-     *  Utility functions
-    */
-
-    /**
-     *  All this functions @return response()
-    */
-
-
     public function index()
     {
         if (Auth::user()->cant('viewAll', CourseRequest::class)) {
@@ -127,6 +120,7 @@ class CourseRequestController extends Controller
         return response()->json($json, 200);
     }
 
+    
     public function manage($id, Request $request)
     {
         $json['error'] = null;

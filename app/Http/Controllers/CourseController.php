@@ -1,5 +1,7 @@
 <?php
-
+/**
+ *  All the functions returns a json response.
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -11,31 +13,17 @@ use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
-
-    /**
-     *  Initialize an Instance of the controller
-     */
     public function __construct()
     {
     }
 
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return response()->json(Course::all(), 200);
     }
 
 
-    /**
-     * Display an ordered listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function orderedIndex($param, $order)
     {
         if (!in_array($param, Course::$sortableFields) || ($order !== 'desc' && $order !== 'asc')) {
@@ -50,13 +38,6 @@ class CourseController extends Controller
     }
 
 
-
-    /**
-     * Display the folders contained in the course.
-     * If root parameter is true, then it will display only root folders
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function folders($id, Request $request)
     {
         $course = Course::find($id);
@@ -78,11 +59,6 @@ class CourseController extends Controller
     }
 
 
-    /**
-     * Display the creator of the current folder
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function user($id)
     {
         $course = Course::find($id);
@@ -98,13 +74,6 @@ class CourseController extends Controller
     }
 
 
-    /**
-     * Display an ordered list of the folders contained
-     * in a Course, if you pass root=true then it will
-     * display only the root ones.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function orderedFolders($id, $param, $order, Request $request)
     {
         $course = Course::find($id);
@@ -131,12 +100,6 @@ class CourseController extends Controller
     }
 
 
-    /**
-     * Return a choosen number of most viewed files
-     * from a course.
-     *
-     * @return \Illuminate\Http\Response
-    */
     public function getMostViewedFiles($id, $limit)
     {
         $course = Course::find($id);
@@ -157,12 +120,7 @@ class CourseController extends Controller
         return response()->json($json, 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
@@ -196,13 +154,6 @@ class CourseController extends Controller
     }
 
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $course = Course::find($id);
@@ -213,14 +164,6 @@ class CourseController extends Controller
     }
 
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $course = Course::find($id);
@@ -263,13 +206,6 @@ class CourseController extends Controller
     }
 
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $course = Course::find($id);

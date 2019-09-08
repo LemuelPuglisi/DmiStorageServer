@@ -1,5 +1,7 @@
 <?php
-
+/**
+ *  All the functions returns a json response.
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -11,24 +13,12 @@ use Illuminate\Support\Facades\Auth;
 
 class FolderController extends Controller
 {
-
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return response()->json(Folder::all(), 200);
     }
 
-    
-    /**
-     * Return the course of the folder.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function course($id)
     {
         $folder = Folder::find($id);
@@ -43,12 +33,7 @@ class FolderController extends Controller
         return response()->json($json, 200);
     }
     
-    
-    /**
-     * Return the files of the folder
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function files($id)
     {
         $folder = Folder::find($id);
@@ -64,11 +49,6 @@ class FolderController extends Controller
     }
 
 
-    /**
-     * Return the sorted files of the folder
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function orderedFiles($id, $param, $order)
     {
         $folder = Folder::find($id);
@@ -90,13 +70,6 @@ class FolderController extends Controller
     }
 
     
-
-    /**
-     * Return the files of the folder
-     * whit a specific extension
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function getFileByExt($id, $ext)
     {
         $folder = Folder::find($id);
@@ -112,12 +85,6 @@ class FolderController extends Controller
     }
 
 
-
-    /**
-     * Return the parent folder of the folder.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function parent($id)
     {
         $folder = Folder::find($id);
@@ -133,11 +100,6 @@ class FolderController extends Controller
     }
 
 
-    /**
-     * Return the subfolders of the folder.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function subfolders($id)
     {
         $folder = Folder::find($id);
@@ -153,11 +115,6 @@ class FolderController extends Controller
     }
 
 
-    /**
-     * Display the creator of the current folder
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function user($id)
     {
         $folder = Folder::find($id);
@@ -173,12 +130,6 @@ class FolderController extends Controller
     }
 
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
@@ -229,13 +180,6 @@ class FolderController extends Controller
     }
 
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $folder = Folder::find($id);
@@ -252,16 +196,6 @@ class FolderController extends Controller
     }
 
 
-
-    /**
-     * Update the specified resource in storage.
-     * If subfolder_of param is -1, then the folder will be
-     * updated to a root folder of the course.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $folder = Folder::find($id);
@@ -339,13 +273,6 @@ class FolderController extends Controller
     }
 
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $folder = Folder::find($id);

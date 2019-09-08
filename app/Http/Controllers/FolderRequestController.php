@@ -1,5 +1,7 @@
 <?php
-
+/**
+ *  All the functions returns a json response.
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -24,10 +26,7 @@ class FolderRequestController extends Controller
         }
         return true;
     }
-    
-    /**
-     * All this functions @return Response
-     */
+
 
     public function index()
     {
@@ -121,7 +120,6 @@ class FolderRequestController extends Controller
     }
 
 
-    
     public function upgrade(Request $request, $id)
     {
         $json['error'] = null;
