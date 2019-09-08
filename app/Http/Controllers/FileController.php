@@ -88,12 +88,6 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
-        if (Auth::user()->cant('create', File::class)) {
-            $json['message'] = 'File not uploaded successfully';
-            $json['error'] = 'Unauthorized';
-            return response()->json($json, 403);
-        }
-
         $validation = Validator::make($request->all(), [
             'name' => 'required|string|max:255|min:3|regex:/^[a-zA-Z0-9\s]+$/',
             'author' => 'nullable|string|max:255|min:2',
@@ -105,6 +99,13 @@ class FileController extends Controller
             $json['message'] = 'File not uploaded successfully';
             $json['error'] = $validation->errors();
             return response()->json($json, 400);
+        }
+
+        $course_id = Folder::find($request->folder_id)->course_id;
+        if (Auth::user()->cant('create', [File::class, $course_id])) {
+            $json['message'] = 'File not uploaded successfully';
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
         }
 
         $folder = Folder::find($request->input('folder_id'));

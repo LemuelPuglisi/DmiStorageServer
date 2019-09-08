@@ -23,7 +23,7 @@ class Folder extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'creator_id')->withDefault([
-            'name' => '[deleted user]',            
+            'name' => '[deleted user]',
         ]);
     }
 
@@ -62,5 +62,9 @@ class Folder extends Model
     {
         return $this->hasMany(FolderRequest::class);
     }
-    
+
+    public function requestsByStatus($status)
+    {
+        return FolderRequest::all()->where('status', $status);
+    }
 }

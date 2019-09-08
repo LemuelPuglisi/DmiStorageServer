@@ -53,7 +53,7 @@ class CoursePolicy
      */
     public function update(User $user, Course $course)
     {
-        return $user->isAdmin() || $user->isSuperAdmin();
+        return $user->isAdmin() || $user->isSuperAdmin() || $user->getCoursePermission($course);
     }
 
     /**
@@ -64,30 +64,6 @@ class CoursePolicy
      * @return mixed
      */
     public function delete(User $user, Course $course)
-    {
-        return $user->isAdmin() || $user->isSuperAdmin();
-    }
-
-    /**
-     * Determine whether the user can restore the course.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Course  $course
-     * @return mixed
-     */
-    public function restore(User $user, Course $course)
-    {
-        return $user->isAdmin() || $user->isSuperAdmin();
-    }
-
-    /**
-     * Determine whether the user can permanently delete the course.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Course  $course
-     * @return mixed
-     */
-    public function forceDelete(User $user, Course $course)
     {
         return $user->isAdmin() || $user->isSuperAdmin();
     }

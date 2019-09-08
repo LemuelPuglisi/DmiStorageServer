@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use App\Models\CourseController; 
+use App\Models\CourseRequest;
+use App\Models\FolderRequest;
 
 class UserController extends Controller
 {
@@ -25,7 +26,7 @@ class UserController extends Controller
 
     /**
      *  Show a list of all the users
-     * 
+     *
      *  @return Illuminate\Http\Response;
      */
     public function index()
@@ -36,18 +37,18 @@ class UserController extends Controller
             return response()->json($json, 403);
         }
 
-        $json['error'] = null; 
+        $json['error'] = null;
         $json['content'] = User::all()
         ->each(function ($user) {
             $user->addHidden(['role']);
-        });    
-        return response()->json($json, 200); 
+        });
+        return response()->json($json, 200);
     }
 
 
     /**
-     *  Show a list of all the admins 
-     * 
+     *  Show a list of all the admins
+     *
      *  @return Illuminate\Http\Response;
      */
     public function indexAdmins()
@@ -59,23 +60,23 @@ class UserController extends Controller
         }
 
         $json['error'] = null;
-        $json['content'] = User::all()->where('role', 2); 
+        $json['content'] = User::all()->where('role', 2);
         return response()->json($json, 200);
     }
 
 
     /**
      *  Change an user role
-     * 
+     *
      *  @return Illuminate\Http\Response;
      */
     public function changeRole(Request $request, $id)
     {
-        $user = User::find($id); 
+        $user = User::find($id);
         if ($user === null) {
-            $json['error'] = 'User not found'; 
+            $json['error'] = 'User not found';
             $json['message'] = 'Role not successfully updated';
-            return response()->json($json, 404); 
+            return response()->json($json, 404);
         }
 
         $validation = Validator::make($request->all(), [
@@ -83,103 +84,103 @@ class UserController extends Controller
         ]);
 
         if ($validation->fails()) {
-            $json['error'] = $validation->errors(); 
+            $json['error'] = $validation->errors();
             $json['message'] = 'Role not successfully updated';
-            return response()->json($json, 400); 
-        } 
-
-        if (Auth::user()->cant('changeRoles', $user)) {
-            $json['error'] = 'Unauthorized'; 
-            $json['message'] = 'Role not successfully updated';
-            return response()->json($json, 403); 
+            return response()->json($json, 400);
         }
 
-        $user->role = $request->input('role'); 
-        $user->save(); 
+        if (Auth::user()->cant('changeRoles', $user)) {
+            $json['error'] = 'Unauthorized';
+            $json['message'] = 'Role not successfully updated';
+            return response()->json($json, 403);
+        }
 
-        $json['error'] = null; 
-        $json['message'] = 'Role successfully updated'; 
+        $user->role = $request->input('role');
+        $user->save();
+
+        $json['error'] = null;
+        $json['message'] = 'Role successfully updated';
         return response()->json($json, 200);
     }
 
     
     /**
      *  Delete user
-     * 
+     *
      *  @return Illuminate\Http\Response;
      */
-    public function destroy($id) 
+    public function destroy($id)
     {
         $user = User::find($id);
         if ($user === null) {
-            $json['error'] = 'User not found'; 
+            $json['error'] = 'User not found';
             $json['message'] = 'User not deleted successfully';
-            return response()->json($json, 404); 
+            return response()->json($json, 404);
         }
 
         if (Auth::user()->cant('delete', $user)) {
-            $json['error'] = 'Unauthorized'; 
-            $json['message'] = 'User not deleted successfully'; 
-            return response()->json($json, 403); 
+            $json['error'] = 'Unauthorized';
+            $json['message'] = 'User not deleted successfully';
+            return response()->json($json, 403);
         }
 
-        $response = $user->delete(); 
+        $response = $user->delete();
         if (!$response) {
             $json['error'] = 'Database error, contact the sysAdmin';
-            $json['message'] = 'User not deleted successfully'; 
+            $json['message'] = 'User not deleted successfully';
             return response()->json($json, 500);
         }
 
-        $json['error'] = null; 
+        $json['error'] = null;
         $json['message'] = 'User successfully deleted';
-        return response()->json($json, 200); 
+        return response()->json($json, 200);
     }
 
 
     /**
      *  Get user portability
-     * 
+     *
      *  @return Illuminate\Http\Response;
      */
-    public function portability($id) 
+    public function portability($id)
     {
-        $user = User::find($id); 
+        $user = User::find($id);
         if ($user === null) {
-            $json['error'] = 'User not found'; 
+            $json['error'] = 'User not found';
             $json['content'] = null;
-            return response()->json($json, 404); 
-        }    
-
-        if (Auth::user()->cant('getPortability', $user)) {
-            $json['error'] = 'Unauthorized'; 
-            $json['content'] = null;
-            return response()->json($json, 403); 
+            return response()->json($json, 404);
         }
 
-        $json['content']['details'] = $user; 
-        $json['content']['files'] = $user->files; 
-        $json['error'] = null; 
-        return response()->json($json, 200); 
+        if (Auth::user()->cant('getPortability', $user)) {
+            $json['error'] = 'Unauthorized';
+            $json['content'] = null;
+            return response()->json($json, 403);
+        }
+
+        $json['content']['details'] = $user;
+        $json['content']['files'] = $user->files;
+        $json['error'] = null;
+        return response()->json($json, 200);
     }
 
     /**
      *  update user
-     * 
+     *
      *  @return Illuminate\Http\Response;
      */
-    public function update(Request $request, $id) 
+    public function update(Request $request, $id)
     {
-        $user = User::find($id); 
+        $user = User::find($id);
         if ($user === null) {
-            $json['error'] = 'User not found'; 
+            $json['error'] = 'User not found';
             $json['message'] = 'User not updated successfully';
-            return response()->json($json, 404); 
+            return response()->json($json, 404);
         }
 
         if (Auth::user()->cant('update', $user)) {
-            $json['error'] = 'Unauthorized'; 
-            $json['message'] = 'User not updated successfully'; 
-            return response()->json($json, 403); 
+            $json['error'] = 'Unauthorized';
+            $json['message'] = 'User not updated successfully';
+            return response()->json($json, 403);
         }
 
         $validation = Validator::make($request->all(), [
@@ -189,19 +190,19 @@ class UserController extends Controller
         ]);
 
         if ($validation->fails()) {
-            $json['error'] = $validation->errors(); 
+            $json['error'] = $validation->errors();
             $json['message'] = 'User not updated successfully';
-            return response()->json($json, 400); 
+            return response()->json($json, 400);
         }
 
-        $user->name = $request->input('name') ?? $user->name; 
-        $user->email = $request->input('email') ?? $user->email; 
-        $user->password = Hash::make($request->input('password')) ?? $user->password;      
-        $user->save(); 
+        $user->name = $request->input('name') ?? $user->name;
+        $user->email = $request->input('email') ?? $user->email;
+        $user->password = Hash::make($request->input('password')) ?? $user->password;
+        $user->save();
         
-        $json['error'] = null; 
-        $json['message'] = 'User successfully updated'; 
-        return response()->json($json, 200); 
+        $json['error'] = null;
+        $json['message'] = 'User successfully updated';
+        return response()->json($json, 200);
     }
 
 
@@ -278,21 +279,21 @@ class UserController extends Controller
     {
         $user = User::find($id);
         if ($user === null) {
-            $json['content'] = null; 
-            $json['error'] = 'User not found'; 
-            return response()->json($json, 404); 
-        } 
+            $json['content'] = null;
+            $json['error'] = 'User not found';
+            return response()->json($json, 404);
+        }
 
         if ($user->isAdmin() || $user->isSuperAdmin()) {
-            $json['content'] = null; 
+            $json['content'] = null;
             $json['error'] = 'Admins can\'t make requests';
             return response()->json($json, 400);
-        } 
+        }
 
         if (Auth::user()->cant('getRequests', $user)) {
-            $json['content'] = null; 
-            $json['error'] = 'Unauthorized'; 
-            return response()->json($json, 403); 
+            $json['content'] = null;
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
         }
 
         $validation = Validator::make($request->all(), [
@@ -300,21 +301,67 @@ class UserController extends Controller
         ]);
 
         if ($validation->fails()) {
-            $json['content'] = null; 
-            $json['error'] = $validation->errors(); 
-            return response()->json($json, 400); 
+            $json['content'] = null;
+            $json['error'] = $validation->errors();
+            return response()->json($json, 400);
         }
 
-        $json['error'] = null; 
+        $json['error'] = null;
         $json['content'] = null;
 
         if (!$request->has('status')) {
-            $json['content'] = $user->courseRequests; 
-        }
-        else {
-            $json['content'] = $user->courseRequestsByStatus($request->status); 
+            $json['content'] = $user->courseRequests;
+        } else {
+            $json['content'] = $user->courseRequestsByStatus($request->status);
         }
         
-        return response()->json($json, 200); 
+        return response()->json($json, 200);
+    }
+
+
+    /**
+     *  Show user folder requests by status
+     */
+    public function folderRequests($id, Request $request)
+    {
+        $user = User::find($id);
+        if ($user === null) {
+            $json['error'] = 'User not found';
+            $json['content'] = null;
+            return response()->json($json, 404);
+        }
+
+        if ($user->isAdmin() || $user->isSuperAdmin()) {
+            $json['content'] = null;
+            $json['error'] = 'Admins can\'t make requests';
+            return response()->json($json, 400);
+        }
+
+        if (Auth::user()->cant('getRequests', $user)) {
+            $json['content'] = null;
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
+        }
+
+        $validation = Validator::make($request->all(), [
+            'status' => 'string|in:pending,active,refused,expired'
+        ]);
+
+        if ($validation->fails()) {
+            $json['content'] = null;
+            $json['error'] = $validation->errors();
+            return response()->json($json, 400);
+        }
+
+        $json['error'] = null;
+        $json['content'] = null;
+
+        if (!$request->has('status')) {
+            $json['content'] = $user->folderRequests;
+        } else {
+            $json['content'] = $user->folderRequestsByStatus($request->status);
+        }
+
+        return response()->json($json, 200);
     }
 }

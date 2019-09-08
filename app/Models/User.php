@@ -8,7 +8,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\PasswordResetNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\File;
-use App\Models\CourseRequests; 
+use App\Models\CourseRequest;
+use App\Models\FolderRequest;
 
 class User extends Authenticatable
 {
@@ -81,12 +82,12 @@ class User extends Authenticatable
 
     public function courseRequests()
     {
-        return $this->hasMany(CourseRequest::class); 
+        return $this->hasMany(CourseRequest::class);
     }
 
     public function courseRequestsByStatus(string $status)
     {
-        return $this->hasMany(CourseRequest::class)->where('status', $status)->get(); 
+        return $this->hasMany(CourseRequest::class)->where('status', $status)->get();
     }
 
     public function folderRequests()
@@ -94,4 +95,21 @@ class User extends Authenticatable
         return $this->hasMany(FolderRequest::class);
     }
 
+    public function folderRequestsByStatus(string $status)
+    {
+        return $this->hasMany(FolderRequest::class)->where('status', $status)->get();
+    }
+
+    public function getCoursePermission(Course $course)
+    {
+        $request = CourseRequest::where('user_id', $this->id)
+        ->where('status', 'active')
+        ->where('course_id', $course->id)
+        ->get();
+
+        if ($request->isEmpty()) {
+            return false;
+        }
+        return true;
+    }
 }

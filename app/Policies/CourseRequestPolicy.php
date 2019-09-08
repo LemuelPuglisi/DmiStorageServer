@@ -12,7 +12,7 @@ class CourseRequestPolicy
     
     public function viewAll(User $user)
     {
-        return $user->isAdmin() || $user->isSuperAdmin(); 
+        return $user->isAdmin() || $user->isSuperAdmin();
     }
 
 

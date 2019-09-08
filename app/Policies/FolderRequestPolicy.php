@@ -12,19 +12,19 @@ class FolderRequestPolicy
     
     public function viewAll(User $user)
     {
-        return $user->isAdmin() || $user->isSuperAdmin(); 
+        return $user->isAdmin() || $user->isSuperAdmin();
     }
 
 
     public function view(User $user, FolderRequest $folderRequest)
     {
-        return $user->isAdmin() || $user->isSuperAdmin() || $user->id == $folderRequest->user_id; 
+        return $user->isAdmin() || $user->isSuperAdmin() || $user->id == $folderRequest->user_id;
     }
 
 
     public function create(User $user)
     {
-        return !$user->isAdmin() && !$user->isSuperAdmin(); 
+        return !$user->isAdmin() && !$user->isSuperAdmin();
     }
 
 
@@ -36,7 +36,7 @@ class FolderRequestPolicy
 
     public function delete(User $user, FolderRequest $folderRequest)
     {
-        return $user->isAdmin() || $user->isSuperAdmin() || $user->id == $folderRequest->user_id;         
+        return $user->isAdmin() || $user->isSuperAdmin() || $user->id == $folderRequest->user_id;
     }
 
 

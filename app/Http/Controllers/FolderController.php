@@ -181,12 +181,6 @@ class FolderController extends Controller
      */
     public function store(Request $request)
     {
-        if (Auth::user()->cant('create', Folder::class)) {
-            $json['message'] = 'Folder not created successfully';
-            $json['error'] = 'Unauthorized';
-            return response()->json($json, 403);
-        }
-
         $validation = Validator::make($request->all(), [
             'display_name' => 'required|string|regex:/^[a-zA-Z0-9\s]+$/|max:255|unique:folders,display_name',
             'subfolder_of' => 'numeric|nullable|exists:folders,id',
@@ -197,6 +191,12 @@ class FolderController extends Controller
             $json['message'] = 'Folder not created successfully';
             $json['error'] = $validation->errors();
             return response()->json($json, 400);
+        }
+
+        if (Auth::user()->cant('create', [Folder::class, $request->course_id])) {
+            $json['message'] = 'Folder not created successfully';
+            $json['error'] = 'Unauthorized';
+            return response()->json($json, 403);
         }
 
         $validStorageName = str_replace(' ', '_', $request->input('display_name'));
@@ -214,7 +214,7 @@ class FolderController extends Controller
         $folder->influence = 0;
         $folder->subfolder_of = $request->input('subfolder_of') ?? null;
         $folder->course_id = $request->input('course_id');
-        $folder->creator_id = Auth::user()->id; 
+        $folder->creator_id = Auth::user()->id;
         $response = $folder->save();
 
         if (!$response) {
@@ -373,6 +373,44 @@ class FolderController extends Controller
 
         $json['error'] = null;
         $json['message'] = 'The folder has been successfully removed';
+        return response()->json($json, 200);
+    }
+
+
+    public function requests($id, Request $request)
+    {
+        $folder = Folder::find($id);
+        if ($folder === null) {
+            $json['error'] = 'Folder not found';
+            $json['content'] = null;
+            return response()->json($json, 404);
+        }
+
+        if (Auth::user()->cant('getRequests', Folder::class)) {
+            $json['error'] = 'Unauthorized';
+            $json['content'] = null;
+            return response()->json($json, 403);
+        }
+
+        $validation = Validator::make($request->all(), [
+            'status' => 'string|in:pending,active,refused,expired'
+        ]);
+
+        if ($validation->fails()) {
+            $json['content'] = null;
+            $json['error'] = $validation->errors();
+            return response()->json($json, 400);
+        }
+
+        $json['error'] = null;
+        $json['content'] = null;
+
+        if (!$request->has('status')) {
+            $json['content'] = $folder->requests;
+        } else {
+            $json['content'] = $folder->requestsByStatus($request->status);
+        }
+        
         return response()->json($json, 200);
     }
 }

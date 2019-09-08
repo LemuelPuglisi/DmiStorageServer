@@ -30,7 +30,7 @@ use Illuminate\Http\Request;
         Route::put('users/{id}/role', 'UserController@changeRole')->name('user.update.role');
         Route::get('users/{id}/portability', 'UserController@portability')->name('user.portability'); 
         Route::get('user/{id}/courses/requests', 'UserController@courseRequests')->name('user.course.requests');
-        // Route::get('user/{id}/folders/requests', 'UserController@folderRequests')->name('user.folder.requests');        
+        Route::get('user/{id}/folders/requests', 'UserController@folderRequests')->name('user.folder.requests');        
 
         /**
          *  Authenticated courses routes
@@ -42,7 +42,7 @@ use Illuminate\Http\Request;
          *  Authenticated folders routes
          */
         Route::resource('folders', 'FolderController')->only(['store', 'update', 'destroy']);
-        // Route::get('folders/{id}/requests/{status}', 'FolderController@requests')->name(folders.requests);
+        Route::get('folders/{id}/requests', 'FolderController@requests')->name('folders.requests');
         
         /**
          *  Authenticated files routes
@@ -50,17 +50,22 @@ use Illuminate\Http\Request;
         Route::resource('files', 'FileController')->only(['store', 'update', 'destroy']);
 
         /**
-         *  Authenticated course requests routes
+         *  Throttle protection to permission requests
          */
-        Route::resource('courses/requests', 'CourseRequestController')->except(['create', 'edit', 'update']); 
-        Route::put('courses/requests/{id}/manage', 'CourseRequestController@manage')->name('courses.request.manage'); 
-    
-        /**
-         *  Authenticated folder requests routes
-         */
-        Route::resource('folders/requests', 'FolderRequestController')->except(['create', 'edit', 'update']); 
-        Route::put('folders/requests/{id}/manage', 'FolderRequestController@manage')->name('folder.request.manage');
-        Route::put('folders/requests/{id}/upgrade', 'FolderRequestController@upgrade')->name('folder.request.upgrade'); 
+        Route::middleware('throttle:25,5')->group(function () {
+            /**
+             *  Authenticated course requests routes
+             */
+            Route::resource('courses/requests', 'CourseRequestController')->except(['create', 'edit', 'update']); 
+            Route::put('courses/requests/{id}/manage', 'CourseRequestController@manage')->name('courses.request.manage'); 
+        
+            /**
+             *  Authenticated folder requests routes
+             */
+            Route::resource('folders/requests', 'FolderRequestController')->except(['create', 'edit', 'update']); 
+            Route::put('folders/requests/{id}/manage', 'FolderRequestController@manage')->name('folder.request.manage');
+            Route::put('folders/requests/{id}/upgrade', 'FolderRequestController@upgrade')->name('folder.request.upgrade'); 
+        });
 
     });
 

@@ -28,7 +28,7 @@ class File extends Model
     public function user()
     {
         return $this->belongsTo(User::class)->withDefault([
-            'name' => '[deleted user]',            
+            'name' => '[deleted user]',
         ]);
     }
 }

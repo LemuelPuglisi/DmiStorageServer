@@ -187,7 +187,7 @@ class CourseController extends Controller
         $course->name = $request->input('name');
         $course->year = $request->input('year');
         $course->cfu = $request->input('cfu');
-        $course->creator_id = Auth::user()->id; 
+        $course->creator_id = Auth::user()->id;
         $course->save();
 
         $json['message'] = 'Course created successfully';
@@ -301,17 +301,17 @@ class CourseController extends Controller
 
     public function requests($id, Request $request)
     {
-        $course = Course::find($id); 
+        $course = Course::find($id);
         if ($course === null) {
-            $json['error'] = 'Course not found'; 
-            $json['content'] = null; 
-            return response()->json($json, 404); 
+            $json['error'] = 'Course not found';
+            $json['content'] = null;
+            return response()->json($json, 404);
         }
 
         if (Auth::user()->cant('getRequests', Course::class)) {
-            $json['error'] = 'Unauthorized'; 
-            $json['content'] = null; 
-            return response()->json($json, 403); 
+            $json['error'] = 'Unauthorized';
+            $json['content'] = null;
+            return response()->json($json, 403);
         }
 
         $validation = Validator::make($request->all(), [
@@ -319,21 +319,20 @@ class CourseController extends Controller
         ]);
 
         if ($validation->fails()) {
-            $json['content'] = null; 
-            $json['error'] = $validation->errors(); 
-            return response()->json($json, 400); 
+            $json['content'] = null;
+            $json['error'] = $validation->errors();
+            return response()->json($json, 400);
         }
 
-        $json['error'] = null; 
+        $json['error'] = null;
         $json['content'] = null;
 
         if (!$request->has('status')) {
-            $json['content'] = $course->requests; 
-        }
-        else {
-            $json['content'] = $course->requestsByStatus($request->status); 
+            $json['content'] = $course->requests;
+        } else {
+            $json['content'] = $course->requestsByStatus($request->status);
         }
         
-        return response()->json($json, 200); 
+        return response()->json($json, 200);
     }
 }
