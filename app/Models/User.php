@@ -7,7 +7,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\PasswordResetNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Models\File; 
+use App\Models\File;
+use App\Models\CourseRequest;
+use App\Models\FolderRequest;
 
 class User extends Authenticatable
 {
@@ -19,7 +21,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password'
     ];
 
     /**
@@ -28,7 +30,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 
+        'password', 'remember_token',
     ];
 
     /**
@@ -40,19 +42,89 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     *  User uploaded files 
-     */
     public function files()
     {
         return $this->hasMany(File::class);
     }
 
-    /**
-     * Reset password customization 
-     */
+    public function folders()
+    {
+        return $this->hasMany(Folder::class);
+    }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
+
+    public function isUser()
+    {
+        return $this->role == 1;
+    }
+
+    public function isAdmin()
+    {
+        return $this->role == 2;
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->role == 3;
+    }
+
+    
+    // Reset password customization
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new PasswordResetNotification($token));
+    }
+
+    public function courseRequests()
+    {
+        return $this->hasMany(CourseRequest::class);
+    }
+
+    public function courseRequestsByStatus(string $status)
+    {
+        return $this->hasMany(CourseRequest::class)->where('status', $status)->get();
+    }
+
+    public function folderRequests()
+    {
+        return $this->hasMany(FolderRequest::class);
+    }
+
+    public function folderRequestsByStatus(string $status)
+    {
+        return $this->hasMany(FolderRequest::class)->where('status', $status)->get();
+    }
+
+    public function getCoursePermission(Course $course)
+    {
+        $request = CourseRequest::where('user_id', $this->id)
+        ->where('status', 'active')
+        ->where('course_id', $course->id)
+        ->where('expiration_date', '>', now())
+        ->get();
+
+        if ($request->isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    public function getFolderPermission(Folder $folder)
+    {
+        $request = FolderRequest::where('user_id', $this->id)
+        ->where('status', 'active')
+        ->where('folder_id', $folder->id)
+        ->where('expiration_date', '>', now())
+        ->get()
+        ->first();
+
+        if ($request === null) {
+            return null;
+        }
+        return json_decode($request->permissions, true);
     }
 }

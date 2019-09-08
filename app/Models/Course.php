@@ -15,6 +15,13 @@ class Course extends Model
         'id', 'year', 'cfu', 'created_at', 'updated_at'
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'creator_id')->withDefault([
+                'name' => '[deleted user]',
+        ]);
+    }
+
 
     public function folders()
     {
@@ -43,5 +50,17 @@ class Course extends Model
                 ->orderBy('files.influence', 'desc')
                 ->limit($limit)
                 ->get();
+    }
+
+    
+    public function requests()
+    {
+        return $this->hasMany(CourseRequest::class);
+    }
+
+
+    public function requestsByStatus($status)
+    {
+        return CourseRequest::all()->where('status', $status);
     }
 }

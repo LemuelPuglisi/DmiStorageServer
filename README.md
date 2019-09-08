@@ -2,7 +2,7 @@
 
 Departement of Mathematics and Informatics cloud based storage server.
 
-The [**project wiki**](https://github.com/LemuelPuglisi/DmiStorageServer/wiki) contains all the APIs this server offers.
+The [**API Documentation**](https://documenter.getpostman.com/view/8215228/SVfRv8rQ?version=latest) contains all the APIs this server offers.
 
 *****
 
@@ -70,6 +70,12 @@ Start a Laravel development server:
 $ php artisan serve
 ```
 
+Add the following project cronjob to the crontab:
+
+```sh
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
 Now you're ready to use our cloud!  
 
 *Note: the root htaccess will fix a passport bug in apache2 servers*
@@ -105,7 +111,8 @@ Leave one line below the title and write a coincise body that shortly describe w
 - Folder and subfolders are in the same level, the database logic will manage the structure. 
 - Courses, Folders and Files are readable without authentication.
 - Users can choose to sign-up to contribute to the cloud management. 
-- Every authenticated user can request both upload and remove permissions to any of the course/folders. 
+- Every authenticated user can request global permissions to every course. 
+- Every authenticated user can request both upload and remove permissions to every folder. 
 - The System Administrator can promote users to admins.
 - Admins have full access to everything.
 - Admins will accept or deny the users' requests.

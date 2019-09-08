@@ -12,7 +12,7 @@ class PasswordResetNotification extends Notification
 {
     use Queueable;
 
-    public $token; 
+    public $token;
 
     /**
      * Create a new notification instance.

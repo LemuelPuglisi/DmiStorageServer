@@ -20,6 +20,12 @@ class Folder extends Model
         return $this->belongsTo(Course::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'creator_id')->withDefault([
+            'name' => '[deleted user]',
+        ]);
+    }
 
     public function files()
     {
@@ -49,5 +55,16 @@ class Folder extends Model
     {
         $this->influence ++;
         $this->save();
+    }
+
+
+    public function requests()
+    {
+        return $this->hasMany(FolderRequest::class);
+    }
+
+    public function requestsByStatus($status)
+    {
+        return FolderRequest::all()->where('status', $status);
     }
 }
