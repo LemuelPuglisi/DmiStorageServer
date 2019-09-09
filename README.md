@@ -1,5 +1,7 @@
 # DMIStorageServer
 
+![GitHub issues](https://img.shields.io/github/issues/lemuelpuglisi/DmiStorageServer?style=flat-square) ![GitHub](https://img.shields.io/github/license/lemuelpuglisi/DmiStorageServer?style=flat-square) ![GitHub contributors](https://img.shields.io/github/contributors/lemuelpuglisi/DmiStorageServer?style=flat-square) ![GitHub last commit](https://img.shields.io/github/last-commit/lemuelpuglisi/DmiStorageServer?style=flat-square)
+
 Departement of Mathematics and Informatics cloud based storage server.
 
 The [**API Documentation**](https://documenter.getpostman.com/view/8215228/SVfRv8rQ?version=latest) contains all the APIs this server offers.
@@ -18,7 +20,9 @@ The [**API Documentation**](https://documenter.getpostman.com/view/8215228/SVfRv
 
 ### Requirements
 
-This is a Laravel project, so you can find the requirements on [Laravel Official Documentation - server requirements](https://laravel.com/docs/5.8#server-requirements) 
+This is a Laravel project, so you can find the requirements on [Laravel Official Documentation - server requirements](https://laravel.com/docs/5.8#server-requirements).
+
+Check also the [backup package requirements](https://docs.spatie.be/laravel-backup/v6/requirements/).
 
 *****
 
