@@ -52,7 +52,7 @@ use Illuminate\Http\Request;
         /**
          *  Throttle protection to permission requests
          */
-        Route::middleware('throttle:25,5')->group(function () {
+        Route::middleware('throttle:300,5')->group(function () {
             /**
              *  Authenticated course requests routes
              */
