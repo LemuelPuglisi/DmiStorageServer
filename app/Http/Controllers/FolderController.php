@@ -150,6 +150,13 @@ class FolderController extends Controller
             return response()->json($json, 403);
         }
 
+        $parent = Folder::find($request->subfolder_of); 
+        if ($parent->course_id != $request->course_id) {
+            $json['message'] = 'Folder not created successfully'; 
+            $json['error'] = 'Parent folder must be on the same course.'; 
+            return response()->json($json, 400); 
+        }
+
         $validStorageName = str_replace(' ', '_', $request->input('display_name'));
         $response = Storage::disk('local')->makeDirectory($validStorageName);
 
