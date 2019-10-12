@@ -314,4 +314,30 @@ class UserController extends Controller
 
         return response()->json($json, 200);
     }
+
+    public function deleteTokens($id) 
+    {
+        $user = User::find($id); 
+        if ($user === null) {
+            $json['error'] = 'User not found';
+            $json['message'] = 'Tokens have not been invalidated';
+            return response()->json($json, 404);
+        }
+        
+        if (Auth::user()->cant('deleteTokens', $user)) {
+            $json['error'] = 'Unauthorized';
+            $json['message'] = 'Tokens have not been invalidated';
+            return response()->json($json, 403);
+        }
+
+        $tokens = $user->tokens; 
+        foreach ($tokens as $token) {
+            $token->delete(); 
+        }
+
+        $json['error'] = null; 
+        $json['message'] = 'Tokens have been invalidated';
+        return response()->json($json, 200); 
+    }
+
 }

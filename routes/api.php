@@ -24,7 +24,8 @@ use Illuminate\Http\Request;
          */
         Route::get('users', 'UserController@index')->name('users.index'); 
         Route::get('users/admins', 'UserController@indexAdmins')->name('users.index.admins'); 
-        Route::get('user', 'UserController@details')->name('user.details'); 
+        Route::get('user', 'UserController@details')->name('user.details');
+        Route::delete('user/{id}/revoke', 'UserController@deleteTokens')->name('user.revoke');  
         Route::delete('users/{id}', 'UserController@destroy')->name('user.delete');  
         Route::put('users/{id}', 'UserController@update')->name('user.update'); 
         Route::put('users/{id}/role', 'UserController@changeRole')->name('user.update.role');
@@ -52,7 +53,7 @@ use Illuminate\Http\Request;
         /**
          *  Throttle protection to permission requests
          */
-        Route::middleware('throttle:300,5')->group(function () {
+        Route::middleware('throttle:750,5')->group(function () {
             /**
              *  Authenticated course requests routes
              */
