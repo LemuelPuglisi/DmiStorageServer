@@ -46,6 +46,12 @@ class UserPolicy
         return $user->isSuperAdmin() || $user->id === $target->id;
     }
 
+
+    public function deleteTokens(User $user, User $target)
+    {
+        return $user->isSuperAdmin() || $user->id === $target->id;
+    }
+
  
     public function getPortability(User $user, User $target)
     {
