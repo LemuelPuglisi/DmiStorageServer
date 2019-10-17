@@ -4,7 +4,7 @@
 
 Departement of Mathematics and Informatics cloud based storage server.
 
-The [**API Documentation**](https://documenter.getpostman.com/view/8215228/SVfRv8rQ?version=latest) contains all the APIs this server offers.
+The [**API Documentation**](https://documenter.getpostman.com/view/8215228/SVtZvS15) contains all the APIs this server offers.
 
 *****
 
