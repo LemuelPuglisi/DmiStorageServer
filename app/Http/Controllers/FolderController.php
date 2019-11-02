@@ -151,7 +151,7 @@ class FolderController extends Controller
         }
 
         $parent = Folder::find($request->subfolder_of); 
-        if ($parent->course_id != $request->course_id) {
+        if ($parent && $parent->course_id != $request->course_id) {
             $json['message'] = 'Folder not created successfully'; 
             $json['error'] = 'Parent folder must be on the same course.'; 
             return response()->json($json, 400); 

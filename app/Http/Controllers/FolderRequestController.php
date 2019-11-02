@@ -136,6 +136,12 @@ class FolderRequestController extends Controller
             return response()->json($json, 403);
         }
 
+        $s = $existingRequest->status;  
+        if ($s == 'expired' || $s == 'refused') {
+            $json['error'] = 'Cannot upgrade a refuser/expired request'; 
+            return response()->json($json, 400); 
+        }
+
         $existingUpgradeRequests = FolderRequest::where('user_id', Auth::user()->id)
         ->where('folder_id', $existingRequest->folder_id)
         ->where('is_upgrade_of', '!=', null)->get();
@@ -170,15 +176,23 @@ class FolderRequestController extends Controller
         $folderRequest->status = 'pending';
         $folderRequest->folder_id = $existingRequest->folder_id;
         $folderRequest->user_id = Auth::user()->id;
-        $folderRequest->is_upgrade_of = $existingRequest->id;
         $folderRequest->permissions = $request->permissions;
         $folderRequest->notes = $request->notes;
         $folderRequest->lifespan = $request->lifespan ?? $existingRequest->lifespan;
+        
+        if ($existingRequest->status != "pending") {
+            $folderRequest->is_upgrade_of = $existingRequest->id;
+        }
+
         $response = $folderRequest->save();
     
         if (!$response) {
             $json['error'] = 'Database error, contact the sysAdmin';
             return response()->json($json, 500);
+        }
+
+        if ($existingRequest->status == 'pending') {
+            $existingRequest->delete(); 
         }
 
         $json['message'] = 'Upgrade successfully stored';
