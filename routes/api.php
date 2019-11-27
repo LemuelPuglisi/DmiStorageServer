@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
          *  Authenticated user routes
          */
         Route::get('users', 'UserController@index')->name('users.index'); 
+        Route::get('users/{id}', 'UserController@show')->name('users.show'); 
         Route::get('users/admins', 'UserController@indexAdmins')->name('users.index.admins'); 
         Route::get('user', 'UserController@details')->name('user.details');
         Route::delete('user/{id}/revoke', 'UserController@deleteTokens')->name('user.revoke');  

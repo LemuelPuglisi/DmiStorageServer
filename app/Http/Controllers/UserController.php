@@ -21,6 +21,27 @@ class UserController extends Controller
     ];
 
 
+    public function show($id)
+    {
+        $user = User::find($id);
+        if ($user === null) {
+            $json['error'] = 'User not found';
+            $json['content'] = null; 
+            return response()->json($json, 404);
+        }
+
+        if (Auth::user()->cant('show', $user)) {
+            $json['error'] = 'Unauthorized';
+            $json['content'] = null; 
+            return response()->json($json, 403);
+        }
+
+        $json['error'] = null; 
+        $json['content'] = $user; 
+        return response()->json($json, 200); 
+    }
+
+
     public function index()
     {
         if (Auth::user()->cant('index', User::class)) {
