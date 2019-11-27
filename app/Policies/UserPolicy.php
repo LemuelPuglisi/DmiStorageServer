@@ -10,11 +10,17 @@ class UserPolicy
     use HandlesAuthorization;
     
 
+    public function show(User $user, User $target)
+    {
+        return $user->isAdmin() || $user->isSuperAdmin() || $user->id === $target->id;
+    }
+
+
     public function index(User $user)
     {
         return $user->isAdmin() || $user->isSuperAdmin();
     }
-    
+
 
     public function indexAdmins(User $user)
     {
