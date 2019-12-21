@@ -47,7 +47,11 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Route::group([ 'middleware' => \Barryvdh\Cors\HandleCors::class], function() {
+            
             Passport::routes();
+
+            Passport::loadKeysFrom('/storage');
+        
         });
     }
 }
